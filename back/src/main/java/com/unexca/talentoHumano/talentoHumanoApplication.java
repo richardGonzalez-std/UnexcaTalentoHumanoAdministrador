@@ -1,4 +1,4 @@
-package com.unexca.talentoHumano;
+package com.unexca.talentohumano;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
