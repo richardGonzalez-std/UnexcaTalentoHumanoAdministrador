@@ -43,3 +43,10 @@ logs/
 
 # Database
 .mysql_history
+
+# WSL/Windows metadata
+*:Zone.Identifier
+
+# Next.js local env
+front/.env.local
+docs/design-companion/*.zip

@@ -1,9 +1,12 @@
 package com.unexca.talentohumano.empleados;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name = "empleados")
@@ -12,7 +15,7 @@ public class Empleado {
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "primer_nombre");
+    @Column(name = "primer_nombre")
     private String primerNombre;
     @Column(name = "segundo_nombre")
     private String segundoNombre;
@@ -20,13 +23,11 @@ public class Empleado {
     private String apellidoPaterno;
     @Column(name = "apellido_materno")
     private String apellidoMaterno;
-    @Column(nullable = false, unique = true)
-    @Column(name = "cedula")
+    @Column(name = "cedula", nullable = false, unique = true)
     private String cedula;
     @Column(name = "telefono")
     private String telefono;
-    @Column(nullable = false, unique = true)
-    @Column(name = "correo")
+    @Column(name = "correo", nullable = false, unique = true)
     @Email
     private String correo;
     @Column(name = "direccion")
@@ -78,10 +79,10 @@ public class Empleado {
         this.cedula = cedula;
     }
 
-    public Double getTelefono() {
+    public String getTelefono() {
         return telefono;
     }
-    public void setTelefono(Double telefono) {
+    public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
 
@@ -100,16 +101,16 @@ public class Empleado {
     }
 
     public String getPasswordHash() {
-    return passwordHash;
+        return passwordHash;
     }
-    public void setPasswordHash(String passwordHash; ) {
-    this.passwordHash = passwordHash;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public Boolean getActivo() {
-    return activo;
+        return activo;
     }
     public void setActivo(Boolean activo) {
-    this.activo = activo;
+        this.activo = activo;
     }
 }
