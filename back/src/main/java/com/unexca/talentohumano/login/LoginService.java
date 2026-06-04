@@ -1,0 +1,25 @@
+package com.unexca.talentohumano.login;
+
+import com.unexca.talentohumano.empleados.Empleado;
+import com.unexca.talentohumano.empleados.EmpleadoRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+public class LoginService {
+
+    private final EmpleadoRepository empleadoRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public LoginService(EmpleadoRepository empleadoRepository, PasswordEncoder passwordEncoder) {
+        this.empleadoRepository = empleadoRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    public Empleado autenticar(String cedula, String password) {
+        return empleadoRepository.findByCedula(cedula)
+                .filter(e -> passwordEncoder.matches(password, e.getPasswordHash()))
+                .orElseThrow(() -> new CredencialesInvalidasException(
+                        "Cédula o contraseña incorrectas"));
+    }
+}
