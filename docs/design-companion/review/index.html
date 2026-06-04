@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Login · Talento Humano — Revisión de propuestas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0b0c0e;--panel:#13151a;--line:#222630;--text:#e9ecf1;--muted:#8b93a3;--accent:#6aa6ff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Hanken Grotesk',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  header{
+    padding:30px 32px 22px;border-bottom:1px solid var(--line);
+    position:sticky;top:0;background:rgba(11,12,14,.86);backdrop-filter:blur(10px);z-index:10;
+  }
+  .h-top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+  h1{font-size:21px;font-weight:700;letter-spacing:-.01em}
+  .tag{font-size:12px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:4px 11px}
+  .sub{color:var(--muted);font-size:14px;margin-top:8px;max-width:80ch;line-height:1.55}
+  .legend{margin-top:14px;display:flex;gap:18px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+  .legend b{color:var(--text);font-weight:600}
+
+  main{padding:26px 24px 60px;display:grid;gap:24px;grid-template-columns:repeat(2,1fr)}
+  @media (max-width:1024px){main{grid-template-columns:1fr}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  .card.featured{border-color:rgba(106,166,255,.6);box-shadow:0 0 0 1px rgba(106,166,255,.35), 0 18px 50px -20px rgba(106,166,255,.4)}
+  .pill{font-size:11px;font-weight:600;color:#0b0c0e;background:var(--accent);border-radius:999px;padding:3px 9px;margin-left:8px}
+  .card__head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+  .card__name{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+  .num{width:24px;height:24px;border-radius:7px;display:grid;place-items:center;font-size:12px;font-weight:700;color:#0b0c0e;background:var(--accent)}
+  .card__desc{font-size:12px;color:var(--muted);margin-top:2px;font-weight:400}
+  .src{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:3px 7px}
+  .open{font-size:12.5px;color:var(--accent);text-decoration:none;border:1px solid rgba(106,166,255,.35);border-radius:8px;padding:6px 11px;white-space:nowrap;transition:background .15s}
+  .open:hover{background:rgba(106,166,255,.12)}
+  .frame-wrap{position:relative;background:#000;flex:1}
+  iframe{width:100%;height:580px;border:0;display:block}
+  .port{font-family:ui-monospace,monospace;font-size:11px;color:var(--muted);padding:9px 16px;border-top:1px solid var(--line);background:#0e1014}
+</style>
+</head>
+<body>
+  <header>
+    <div class="h-top">
+      <h1>Login · Talento Humano — UNEXCA</h1>
+      <span class="tag">4 propuestas · revisión</span>
+    </div>
+    <p class="sub">Comparación en vivo de tres direcciones visuales para la pantalla de login. Cada propuesta corre en su propio puerto; ábrela a pantalla completa para verla a tamaño real (la propuesta 2 es de pantalla dividida y se apila dentro del recuadro estrecho).</p>
+    <div class="legend">
+      <span><b>Misma funcionalidad:</b> cédula + contraseña, mostrar/ocultar, recordarme, error genérico.</span>
+      <span><b>Demo:</b> el botón "Ingresar" simula carga y muestra el estado de error.</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <div class="card__head">
+        <div>
+          <div class="card__name"><span class="num">1</span> Minimal oscura</div>
+          <div class="card__desc">Generada por claude.ai/design · Inter · acento azul</div>
+        </div>
+        <a class="open" href="http://localhost:4101" target="_blank" rel="noopener">Abrir ↗</a>
+      </div>
+      <div class="frame-wrap"><iframe src="http://localhost:4101" title="Propuesta 1" loading="lazy"></iframe></div>
+      <div class="port">:4101 · <span class="src">claude.ai/design</span></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head">
+        <div>
+          <div class="card__name"><span class="num">2</span> Institucional dividida</div>
+          <div class="card__desc">Pantalla dividida · serif Fraunces · verde + dorado</div>
+        </div>
+        <a class="open" href="http://localhost:4102" target="_blank" rel="noopener">Abrir ↗</a>
+      </div>
+      <div class="frame-wrap"><iframe src="http://localhost:4102" title="Propuesta 2" loading="lazy"></iframe></div>
+      <div class="port">:4102 · <span class="src">a medida</span></div>
+    </section>
+
+    <section class="card">
+      <div class="card__head">
+        <div>
+          <div class="card__name"><span class="num">3</span> Cálida refinada</div>
+          <div class="card__desc">Tarjeta centrada · Instrument Serif · ámbar + grano</div>
+        </div>
+        <a class="open" href="http://localhost:4103" target="_blank" rel="noopener">Abrir ↗</a>
+      </div>
+      <div class="frame-wrap"><iframe src="http://localhost:4103" title="Propuesta 3" loading="lazy"></iframe></div>
+      <div class="port">:4103 · <span class="src">a medida</span></div>
+    </section>
+
+    <section class="card featured">
+      <div class="card__head">
+        <div>
+          <div class="card__name"><span class="num">4</span> Azul institucional <span class="pill">tu paleta</span></div>
+          <div class="card__desc">Base Propuesta 3 · #002e6b → #2b3d4f · logo blanco real</div>
+        </div>
+        <a class="open" href="http://localhost:4104" target="_blank" rel="noopener">Abrir ↗</a>
+      </div>
+      <div class="frame-wrap"><iframe src="http://localhost:4104" title="Propuesta 4" loading="lazy"></iframe></div>
+      <div class="port">:4104 · <span class="src">a medida</span></div>
+    </section>
+  </main>
+</body>
+</html>
