@@ -54,3 +54,8 @@ docs/design-companion/*.zip
 # Logo conversion working files
 docs/unexca-logo-svg/
 docs/*.zip
+
+# Playwright MCP artifacts & verification screenshots
+.playwright-mcp/
+/*.png
+back/.playwright-mcp/

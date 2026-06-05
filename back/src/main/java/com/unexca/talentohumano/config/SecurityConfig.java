@@ -41,7 +41,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration c = new CorsConfiguration();
-        c.setAllowedOrigins(List.of("http://localhost:3000"));
+        // Orígenes de desarrollo del frontend Next.js (3000 por defecto; 3001 si 3000 está ocupado).
+        c.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001"));
         c.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         c.setAllowedHeaders(List.of("*"));
         c.setAllowCredentials(true);
