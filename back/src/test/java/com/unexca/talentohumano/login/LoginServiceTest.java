@@ -47,4 +47,14 @@ class LoginServiceTest {
         assertThrows(CredencialesInvalidasException.class,
                 () -> service.autenticar("V-12345678", "malo"));
     }
+
+    @Test
+    void rechazaCuentaDesactivada() {
+        Empleado inactivo = empleadoConPassword("secreto");
+        inactivo.setActivo(false);
+        when(repo.findByCedula("V-12345678")).thenReturn(Optional.of(inactivo));
+        // Credenciales correctas pero cuenta inactiva => mismo error genérico.
+        assertThrows(CredencialesInvalidasException.class,
+                () -> service.autenticar("V-12345678", "secreto"));
+    }
 }

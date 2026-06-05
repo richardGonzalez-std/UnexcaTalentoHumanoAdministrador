@@ -5,6 +5,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,20 @@ public class JwtService {
         this.secret = secret.getBytes(StandardCharsets.UTF_8);
         this.expMinutes = expMinutes;
         this.expMinutesRecordarme = expMinutesRecordarme;
+    }
+
+    /** Falla el arranque si el secreto es débil o quedó con el placeholder de ejemplo. */
+    @PostConstruct
+    void validarSecreto() {
+        String s = new String(secret, StandardCharsets.UTF_8);
+        if (secret.length < 32) {
+            throw new IllegalStateException(
+                "app.jwt.secret debe tener al menos 32 bytes. Configúralo vía la variable de entorno APP_JWT_SECRET.");
+        }
+        if (s.contains("cambia-este-secreto")) {
+            throw new IllegalStateException(
+                "app.jwt.secret sigue siendo el placeholder de ejemplo. Configura un secreto real vía APP_JWT_SECRET.");
+        }
     }
 
     /** Minutos de vida del token según "recordarme". Útil también para el Max-Age de la cookie. */

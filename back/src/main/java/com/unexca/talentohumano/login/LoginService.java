@@ -19,6 +19,9 @@ public class LoginService {
     public Empleado autenticar(String cedula, String password) {
         return empleadoRepository.findByCedula(cedula)
                 .filter(e -> passwordEncoder.matches(password, e.getPasswordHash()))
+                // Cuenta desactivada no puede iniciar sesión. Mismo mensaje genérico que
+                // credenciales inválidas: no revelamos si la cuenta existe pero está inactiva.
+                .filter(e -> Boolean.TRUE.equals(e.getActivo()))
                 .orElseThrow(() -> new CredencialesInvalidasException(
                         "Cédula o contraseña incorrectas"));
     }
