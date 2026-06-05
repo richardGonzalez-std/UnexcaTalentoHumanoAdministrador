@@ -1,0 +1,294 @@
+/* Estilos del login — Propuesta 4 (paleta #002e6b/#2b3d4f, Tektur, tarjeta blanca).
+   Portado de docs/design-companion/login-unexca-v4/index.html.
+   En CSS modules :root no se scopea, así que las variables viven en .page. */
+
+.page {
+  --navy: #002e6b;
+  --slate: #2b3d4f;
+  --card: #ffffff;
+  --soft: #f4f7fb;       /* fondo de inputs */
+  --ink: #16263b;        /* texto principal oscuro */
+  --muted: #647691;      /* texto secundario */
+  --line: #dde5ef;       /* bordes claros */
+  --accent: #00337c;
+  --accent-2: #1657b0;
+  --danger: #c0392b;
+
+  font-family: "Tektur", system-ui, sans-serif;
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--navy);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 28px;
+  position: relative;
+}
+/* fondo: degradado #002e6b → #2b3d4f, sin glow */
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(168deg, var(--navy) 0%, var(--slate) 100%);
+}
+
+.shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 408px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* logo blanco sobre la zona azul, encima de la tarjeta */
+.logo {
+  margin-bottom: 22px;
+}
+.logo img {
+  height: 58px;
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.35));
+}
+
+.card {
+  width: 100%;
+  background: var(--card);
+  border-radius: 20px;
+  padding: 38px 36px 32px;
+  box-shadow: 0 30px 70px -28px rgba(0, 18, 50, 0.55);
+}
+
+.head {
+  text-align: center;
+  margin-bottom: 26px;
+}
+.kicker {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent-2);
+  font-weight: 600;
+}
+.title {
+  font-weight: 500;
+  font-size: 27px;
+  line-height: 1.12;
+  margin-top: 9px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.sub {
+  color: var(--muted);
+  font-size: 13.5px;
+  margin-top: 8px;
+  font-weight: 400;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #2c405a;
+  margin-bottom: 7px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.control {
+  position: relative;
+}
+.control input {
+  width: 100%;
+  height: 50px;
+  border-radius: 12px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  padding: 0 16px;
+  font-size: 15px;
+  font-family: inherit;
+  font-weight: 400;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+}
+.control input::placeholder {
+  color: #9aa9bd;
+  font-weight: 400;
+}
+.control input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(0, 51, 124, 0.13);
+  background: #fff;
+}
+.pwInput {
+  padding-right: 48px !important;
+}
+.toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 36px;
+  width: 36px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #8493a8;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: color 0.15s, background 0.15s;
+}
+.toggle:hover {
+  color: var(--ink);
+  background: #eef2f8;
+}
+.toggle svg {
+  width: 19px;
+  height: 19px;
+  position: absolute;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.icoOff {
+  opacity: 0;
+  transform: scale(0.85);
+}
+.toggle.on .icoOn {
+  opacity: 0;
+  transform: scale(0.85);
+}
+.toggle.on .icoOff {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 1px;
+}
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13.5px;
+  color: #3a4d66;
+  font-weight: 500;
+}
+.check input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.box {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 1.5px solid #c2cee0;
+  background: #fff;
+  display: grid;
+  place-items: center;
+  transition: 0.15s;
+}
+.check input:checked + .box {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.box svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: 0.15s;
+  color: #fff;
+}
+.check input:checked + .box svg {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.btn {
+  margin-top: 8px;
+  width: 100%;
+  height: 52px;
+  border: 0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+  color: #fff;
+  background: linear-gradient(168deg, #0a3f93, var(--navy));
+  box-shadow: 0 12px 26px -10px rgba(0, 46, 107, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: transform 0.12s, box-shadow 0.18s, filter 0.18s;
+}
+.btn:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 14px 30px -10px rgba(0, 46, 107, 0.7);
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn[disabled] {
+  cursor: progress;
+  filter: saturate(0.7) brightness(0.95);
+}
+.spin {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  animation: spin 0.7s linear infinite;
+  display: none;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.btn.loading .spin {
+  display: block;
+}
+.btn.loading .btnLabel {
+  opacity: 0.7;
+}
+
+.error {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  margin-top: 14px;
+  color: var(--danger);
+  font-size: 13px;
+  font-weight: 500;
+  background: #fcecea;
+  border: 1px solid #f3c9c4;
+  padding: 11px 13px;
+  border-radius: 10px;
+}
+.error.show {
+  display: flex;
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
