@@ -50,3 +50,7 @@ logs/
 # Next.js local env
 front/.env.local
 docs/design-companion/*.zip
+
+# Logo conversion working files
+docs/unexca-logo-svg/
+docs/*.zip
