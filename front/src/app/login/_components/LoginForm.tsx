@@ -21,7 +21,7 @@ export default function LoginForm() {
     setCargando(true);
     try {
       await login({ cedula, password, recordarme });
-      router.push("/"); // destino placeholder; cambiar a /dashboard cuando exista
+      router.push("/dashboard"); // área autenticada (placeholder por ahora)
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo iniciar sesión");
     } finally {

@@ -1,19 +1,7 @@
-import type { Metadata } from "next";
-import LoginForm from "./_components/LoginForm";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Iniciar sesión · Talento Humano UNEXCA",
-};
-
+// La pantalla de login vive en la raíz "/". Esta ruta queda como alias y
+// redirige a "/" para tener una única fuente de verdad.
 export default function LoginPage() {
-  return (
-    <>
-      {/* Fuente Tektur (diseño Propuesta 4) */}
-      <link
-        href="https://fonts.googleapis.com/css2?family=Tektur:wght@400;500;600;700&display=swap"
-        rel="stylesheet"
-      />
-      <LoginForm />
-    </>
-  );
+  redirect("/");
 }
