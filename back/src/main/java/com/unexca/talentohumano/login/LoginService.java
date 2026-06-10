@@ -5,6 +5,8 @@ import com.unexca.talentohumano.empleados.EmpleadoRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class LoginService {
 
@@ -24,5 +26,11 @@ public class LoginService {
                 .filter(e -> Boolean.TRUE.equals(e.getActivo()))
                 .orElseThrow(() -> new CredencialesInvalidasException(
                         "Cédula o contraseña incorrectas"));
+    }
+
+    /** Empleado activo a partir de su cédula (para resolver la sesión actual del JWT). */
+    public Optional<Empleado> porCedula(String cedula) {
+        return empleadoRepository.findByCedula(cedula)
+                .filter(e -> Boolean.TRUE.equals(e.getActivo()));
     }
 }

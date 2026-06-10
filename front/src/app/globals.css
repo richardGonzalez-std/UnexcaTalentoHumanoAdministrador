@@ -12,6 +12,25 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* Marca UNEXCA — tokens de Talento Humano (paleta unificada con el login).
+   Tailwind v4 genera utilidades a partir de estas variables:
+   --color-brand → bg-brand / text-brand / border-brand, etc. */
+@theme {
+  --color-brand: #002e6b;
+  --color-brand-slate: #2b3d4f;
+  --color-brand-600: #00337c;
+  --color-brand-300: #8aa3c6;
+  --color-ink: #16263b;
+  --color-ink-soft: #647691;
+  --color-line: #dde5ef;
+  --color-canvas: #f4f7fb;
+  --color-accent-soft: #e8eef8;
+
+  --shadow-card: 0 1px 2px rgba(0, 46, 107, 0.06), 0 1px 3px rgba(0, 46, 107, 0.04);
+  --shadow-card-md: 0 6px 18px rgba(0, 46, 107, 0.08), 0 2px 6px rgba(0, 46, 107, 0.05);
+  --shadow-card-lg: 0 16px 40px rgba(0, 46, 107, 0.14);
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
