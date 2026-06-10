@@ -59,3 +59,13 @@ docs/*.zip
 .playwright-mcp/
 /*.png
 back/.playwright-mcp/
+
+# Documentos sensibles (estados de cuenta / PDFs personales — NUNCA al repo)
+*.pdf
+
+# Screenshots anidadas en docs: la regla /*.png de arriba ancla a la raíz,
+# por eso docs/**/screenshots/*.png se escapaban (incl. captura con JWT real)
+docs/**/*.png
+
+# TypeScript incremental build artifact
+*.tsbuildinfo
