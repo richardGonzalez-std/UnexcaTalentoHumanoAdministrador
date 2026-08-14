@@ -18,6 +18,12 @@ public class GlobalExceptionHandler {
                 .body(Map.of("mensaje", ex.getMessage()));
     }
 
+    /** Datos de entrada incoherentes detectados en la capa de servicio (p. ej. fechas invertidas). */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> argumentoInvalido(IllegalArgumentException ex) {
+        return ResponseEntity.badRequest().body(Map.of("mensaje", ex.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, String>> validacion(MethodArgumentNotValidException ex) {
         String msg = ex.getBindingResult().getFieldErrors().stream()

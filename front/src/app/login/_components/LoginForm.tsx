@@ -5,9 +5,17 @@ import { useRouter } from "next/navigation";
 import { login } from "../libs/api";
 import styles from "./LoginForm.module.css";
 
+const TIPOS_CEDULA = [
+  { value: "V", label: "Venezolano (V)" },
+  { value: "E", label: "Extranjero (E)" },
+  { value: "J", label: "Jurídico (J)" },
+  { value: "G", label: "Gobierno (G)" },
+];
+
 export default function LoginForm() {
   const router = useRouter();
-  const [cedula, setCedula] = useState("");
+  const [tipoCedula, setTipoCedula] = useState("V");
+  const [numeroCedula, setNumeroCedula] = useState("");
   const [password, setPassword] = useState("");
   const [recordarme, setRecordarme] = useState(false);
   const [mostrar, setMostrar] = useState(false);
@@ -16,11 +24,12 @@ export default function LoginForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!cedula.trim() || !password.trim()) return;
+    const cedulaCompleta = `${tipoCedula}-${numeroCedula}`;
+    if (!tipoCedula.trim() || !numeroCedula.trim() || !password.trim()) return;
     setError(null);
     setCargando(true);
     try {
-      await login({ cedula, password, recordarme });
+      await login({ cedula: cedulaCompleta, password, recordarme });
       router.push("/dashboard"); // área autenticada (placeholder por ahora)
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo iniciar sesión");
@@ -48,16 +57,52 @@ export default function LoginForm() {
           <form onSubmit={onSubmit} noValidate>
             <div className={styles.field}>
               <label htmlFor="cedula">Cédula</label>
-              <div className={styles.control}>
-                <input
-                  id="cedula"
-                  type="text"
-                  placeholder="V-12345678"
-                  autoComplete="username"
-                  value={cedula}
-                  onChange={(e) => setCedula(e.target.value)}
+              <div style={{ display: "flex", gap: "6px", alignItems: "stretch" }}>
+                <select
+                  value={tipoCedula}
+                  onChange={(e) => setTipoCedula(e.target.value)}
                   disabled={cargando}
-                />
+                  style={{
+                    width: "70px",
+                    height: "50px",
+                    borderRadius: "12px",
+                    border: "1px solid var(--line)",
+                    background: "var(--soft)",
+                    color: "var(--ink)",
+                    padding: "0 8px",
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    transition: "border-color 0.18s, box-shadow 0.18s",
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.outline = "none";
+                    e.target.style.borderColor = "var(--accent)";
+                    e.target.style.boxShadow = "0 0 0 4px rgba(0, 51, 124, 0.13)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "var(--line)";
+                    e.target.style.boxShadow = "none";
+                  }}
+                >
+                  {TIPOS_CEDULA.map((tipo) => (
+                    <option key={tipo.value} value={tipo.value}>
+                      {tipo.value}
+                    </option>
+                  ))}
+                </select>
+                <div className={styles.control} style={{ flex: 1 }}>
+                  <input
+                    id="cedula"
+                    type="text"
+                    placeholder="12345678"
+                    autoComplete="username"
+                    value={numeroCedula}
+                    onChange={(e) => setNumeroCedula(e.target.value.replace(/\D/g, "").slice(0, 8))}
+                    disabled={cargando}
+                  />
+                </div>
               </div>
             </div>
 

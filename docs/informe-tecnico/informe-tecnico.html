@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Informe Técnico - UnexcaTalentoHumanoAdministrador</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    @page { margin: 2cm; size: A4; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: white;
+      padding: 2cm;
+    }
+    h1 { font-size: 2.5em; margin: 1em 0 0.5em 0; page-break-after: avoid; color: #002e6b; border-bottom: 3px solid #002e6b; padding-bottom: 0.3em; }
+    h2 { font-size: 1.8em; margin: 1.5em 0 0.5em 0; page-break-after: avoid; color: #2b3d4f; }
+    h3 { font-size: 1.3em; margin: 1em 0 0.3em 0; page-break-after: avoid; color: #2b3d4f; }
+    h4 { font-size: 1.1em; margin: 0.8em 0 0.2em 0; font-weight: 600; }
+    p { margin: 0.8em 0; text-align: justify; }
+    code { background: #f4f4f4; padding: 0.2em 0.4em; border-radius: 3px; font-family: 'Courier New', monospace; }
+    pre { background: #f4f4f4; padding: 1em; border-radius: 4px; overflow-x: auto; margin: 1em 0; border-left: 4px solid #002e6b; }
+    pre.mermaid { background: white; border: 1px solid #ddd; }
+    table { width: 100%; border-collapse: collapse; margin: 1em 0; }
+    table, th, td { border: 1px solid #ddd; }
+    th { background: #f4f4f4; padding: 0.8em; font-weight: 600; text-align: left; }
+    td { padding: 0.8em; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    ul, ol { margin: 0.8em 0 0.8em 2em; }
+    li { margin: 0.3em 0; }
+    a { color: #002e6b; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    hr { border: none; border-top: 2px solid #ddd; margin: 2em 0; }
+    blockquote { border-left: 4px solid #002e6b; padding-left: 1em; margin: 1em 0; color: #666; }
+    @media print {
+      body { padding: 0; }
+      h1 { page-break-after: avoid; }
+      h2, h3 { page-break-after: avoid; }
+      table { page-break-inside: avoid; }
+      pre { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+<h1>Informe Técnico Completo: UnexcaTalentoHumanoAdministrador</h1></p><p>---</p><p><h2>Portada</h2></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p>> <strong>Nota metodológica.</strong> Este informe se elaboró leyendo directamente el código fuente del repositorio en <code>/home/rrichard/UnexcaTalentoHumanoAdministrador/</code>. Se verificaron <strong>todos</strong> los archivos fuente de <code>back/src</code> y <code>front/src</code> (no solo una muestra). Cuando una afirmación no pudo verificarse contra el código, se indica explícitamente con la etiqueta <strong>[NO VERIFICADO]</strong>. Los artefactos de build (<code>back/build</code>, <code>back/bin</code>, <code>front/.next</code>, <code>node_modules</code>) no forman parte del análisis por ser generados.</p><p>> <strong>Cambios respecto a la v1.0.</strong> Esta versión 2.0 refleja la incorporación del <strong>módulo de Prestaciones</strong> (<code>com.unexca.talentohumano.prestaciones</code>, commits <code>deb5f12</code> y <code>335ff50</code>, 3 archivos / 117 líneas): un motor de cálculo de prestaciones sociales conforme a la LOTTT venezolana. Se actualizaron el resumen ejecutivo, el estado de madurez (§1.4), la organización del código (§2.3), el inventario de endpoints (Apéndice A) y la sección de seguridad (§5); se añadieron la nueva <strong>§3.6</strong> (análisis línea por línea del módulo) y el <strong>Apéndice H</strong> (análisis normativo del cálculo, con la base legal y las brechas).</p><p>---</p><p><h2>Resumen Ejecutivo</h2></p><p><strong>UnexcaTalentoHumanoAdministrador</strong> es un sistema web en construcción para automatizar procesos administrativos del departamento de Talento Humano de la UNEXCA, con énfasis declarado en el cálculo de prestaciones sociales. La arquitectura separa un <strong>backend</strong> de API REST en Spring Boot 4 (Java 26) de un <strong>frontend</strong> en Next.js 16 (React 19, TypeScript, Tailwind CSS v4). Ambos se comunican mediante peticiones HTTP autenticadas por un <strong>JSON Web Token (JWT) almacenado en una cookie <code>httpOnly</code></strong>.</p><p>En su estado actual, el proyecto tiene <strong>dos módulos con lógica de negocio real: (1) autenticación (login/logout/sesión) y (2) cálculo de prestaciones sociales (backend)</strong>. El de autenticación está construido con buenas prácticas de seguridad (contraseñas con BCrypt, cookie <code>httpOnly</code>, mensajes de error genéricos que no revelan la existencia de cuentas, y revocación efectiva al desactivar un empleado). El de <strong>prestaciones</strong> —incorporado en esta v2.0— es un motor de cálculo (<code>POST /api/prestaciones/calcular</code>) que codifica los pilares de la Ley Orgánica del Trabajo venezolana (LOTTT): salario integral, la regla del "mayor de" entre garantía y retroactivo, la indemnización por despido injustificado y las deducciones legales (ver §3.6 y Apéndice H). Los módulos restantes —Administración y Correspondencia— y la gestión de Empleados <strong>existen únicamente como maquetas de interfaz con datos simulados (mock)</strong> o como entidad sin CRUD; no hay lógica de negocio ni persistencia detrás de ellos. La entidad <code>Empleado</code> está modelada, pero no existe ningún CRUD para gestionarla salvo un sembrador de datos de demostración.</p><p>El módulo de prestaciones, aunque <strong>funcional</strong>, es aún una <strong>calculadora pura</strong>: recibe todas las cifras salariales en el cuerpo de la petición (no las obtiene de la BD, ni siquiera usa el <code>empleadoId</code> que recibe), no persiste el resultado ni deja rastro de auditoría, opera con aritmética de coma flotante (<code>double</code>) inadecuada para montos legales, y carece de validación de entrada y de control de acceso por rol. Estas limitaciones —junto con varias reglas normativas no cubiertas— se detallan en §3.6, §5, §6 y el Apéndice H, y deben resolverse antes de emitir liquidaciones oficiales.</p><p>Desde el punto de vista de <strong>seguridad</strong>, la postura del módulo de login es sólida en su diseño, pero <strong>no está lista para producción</strong> y presenta riesgos que deben resolverse antes de cualquier despliegue: la cookie se emite con <code>Secure=false</code> (transmisión en texto plano), existen un secreto JWT y una contraseña de base de datos <strong>por defecto embebidos en el repositorio</strong> cuya validación de arranque es insuficiente para impedir su uso accidental en producción, no hay protección contra fuerza bruta, y no se define control de acceso por roles (todo usuario autenticado tiene los mismos permisos). La recomendación central es tratar el módulo de autenticación como <strong>maduro pero no endurecido para producción</strong>, y priorizar (1) el endurecimiento de secretos y transporte, y (2) la construcción de los módulos de negocio sobre los cimientos de seguridad ya establecidos.</p><p>---</p><p><h2>1. Contexto y Objetivos</h2></p><p><h3>1.1 ¿Qué es?</h3></p><p>Según el <code>README.md</code> del repositorio, el sistema busca <strong>automatizar procesos administrativos internos</strong> del departamento de Talento Humano de la UNEXCA (Universidad Nacional Experimental de la Gran Caracas), reduciendo la dependencia de servicios externos, con foco especial en el <strong>cálculo de prestaciones sociales</strong> conforme a normativas del Ministerio de Educación (Venezuela).</p><p><h3>1.2 Módulos previstos (según README)</h3></p><p>1. <strong>Login</strong> — Control de acceso para personal autorizado. <strong>[Implementado]</strong>
+2. <strong>Cálculo de Prestaciones</strong> — Automatización de cálculos legales. <strong>[Implementado en backend: motor de cálculo LOTTT vía <code>POST /api/prestaciones/calcular</code>; sin interfaz de usuario, sin persistencia ni integración con el CRUD de empleados — ver §3.6 y Apéndice H]</strong>
+3. <strong>Administración</strong> — Gestión de datos y configuración. <strong>[No implementado]</strong>
+4. <strong>Correspondencia</strong> — Seguimiento de documentos y comunicaciones. <strong>[No implementado]</strong></p><p><h3>1.3 ¿Para qué y por quién?</h3></p><p><li><strong>Usuarios finales:</strong> personal administrativo del departamento de Talento Humano. La autenticación es por <strong>cédula + contraseña</strong> (no correo), lo cual encaja con el contexto venezolano y con un padrón de empleados internos.</li>
+<li><strong>Escala prevista:</strong> el propio código de datos simulados sugiere una organización pequeña-mediana (KPIs de ejemplo: 248 profesores, 63 administrativos). No es un sistema masivo de cara al público.</li>
+<li><strong>Naturaleza de los datos:</strong> información personal de empleados (PII) y, a futuro, cálculos salariales y de prestaciones. Esto eleva las exigencias de confidencialidad y auditoría.</li></p><p><h3>1.4 Estado de madurez global</h3></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p>---</p><p><h2>2. Arquitectura General</h2></p><p><h3>2.1 Pila tecnológica (verificada)</h3></p><p><strong>Backend</strong> (<code>back/build.gradle</code>, <code>back/src</code>):</p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p><strong>Frontend</strong> (<code>front/package.json</code>):</p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p>> <strong>Advertencia de versiones.</strong> El archivo <code>front/AGENTS.md</code> señala explícitamente que esta versión de Next.js (16) "no es la que conoces" e incluye cambios de ruptura respecto a versiones anteriores; recomienda leer <code>node_modules/next/dist/docs/</code> antes de escribir código. Java 26 y Spring Boot 4.0.6 son igualmente muy recientes. Esto implica <strong>riesgo de documentación escasa</strong> y menor base de conocimiento comunitario.</p><p><h3>2.2 Diagrama de componentes</h3></p><p>``<code>mermaid
+graph TB
+    subgraph Navegador["Navegador del usuario"]
+        UI["Next.js UI<br/>(login + dashboard)"]
+    end</p><p>    subgraph Front["Frontend · Next.js 16 (App Router)"]
+        direction TB
+        RootPage["/ (page.tsx)<br/>Login o redirección al panel"]
+        LoginForm["LoginForm.tsx<br/>(client component)"]
+        Dash["/dashboard (page.tsx)<br/>Server component protegido"]
+        Session["libs/session.ts<br/>obtenerUsuario() [servidor]"]
+        ApiLib["login/libs/api.ts<br/>fetch login() [cliente]"]
+    end</p><p>    subgraph Back["Backend · Spring Boot 4 (API REST)"]
+        direction TB
+        SecFilter["SecurityFilterChain<br/>+ JwtCookieFilter"]
+        LoginCtrl["LoginController<br/>/api/auth/<em></em>"]
+        LoginSvc["LoginService"]
+        JwtSvc["JwtService (HS256)"]
+        PrestCtrl["PrestacionController<br/>/api/prestaciones/<em></em>"]
+        PrestSvc["PrestacionService<br/>(motor de cálculo LOTTT)"]
+        Repo["EmpleadoRepository (JPA)"]
+    end</p><p>    DB[("MySQL<br/>unexca_talento_humano<br/>tabla: empleados")]</p><p>    UI --> RootPage
+    UI --> Dash
+    LoginForm -->|"POST /api/auth/login<br/>credentials: include"| SecFilter
+    ApiLib -.usa.-> LoginForm
+    Dash --> Session
+    Session -->|"GET /api/auth/me<br/>reenvía cookie httpOnly"| SecFilter
+    SecFilter --> LoginCtrl
+    LoginCtrl --> LoginSvc
+    LoginCtrl --> JwtSvc
+    LoginSvc --> Repo
+    SecFilter -->|"POST /api/prestaciones/calcular<br/>(requiere cookie JWT)"| PrestCtrl
+    PrestCtrl --> PrestSvc
+    SecFilter -.valida token + activo.-> Repo
+    Repo --> DB
+</code>`<code></p><p><h3>2.3 Organización del código</h3></p><p><strong>Backend</strong> — paquetes bajo </code>com.unexca.talentohumano<code>:</p><p></code>`<code>
+talentohumano/
+├── TalentoHumanoApplication.java     # Punto de entrada Spring Boot
+├── config/
+│   ├── SecurityConfig.java           # Cadena de filtros, CORS, CSRF, autorización
+│   ├── AppBeans.java                 # Bean PasswordEncoder (BCrypt)
+│   └── GlobalExceptionHandler.java   # Manejo de errores → JSON {mensaje}
+├── login/
+│   ├── LoginController.java          # /api/auth/{login,me,logout}
+│   ├── LoginService.java             # Autenticación contra BD
+│   ├── JwtService.java               # Generación/validación de JWT (HS256)
+│   ├── JwtCookieFilter.java          # Filtro por-petición: lee cookie, autentica
+│   ├── LoginRequest.java             # DTO entrada (record)
+│   ├── LoginResponse.java            # DTO salida (record)
+│   ├── MeResponse.java               # DTO sesión actual (record)
+│   └── CredencialesInvalidasException.java
+├── empleados/
+│   ├── Empleado.java                 # Entidad JPA (tabla </code>empleados<code>)
+│   └── EmpleadoRepository.java       # Repositorio JPA (findByCedula)
+├── prestaciones/                     # NUEVO (v2.0) — motor de cálculo LOTTT
+│   ├── PrestacionController.java     # POST /api/prestaciones/calcular
+│   ├── PrestacionService.java        # Motor de cálculo (salario integral, garantía, indemnización)
+│   └── DatosLiquidacionRequest.java  # DTO entrada (record, 14 campos)
+└── dev/
+    └── DemoSeeder.java               # Siembra empleado de prueba (condicional)
+</code>`<code></p><p><strong>Frontend</strong> — bajo </code>front/src/app<code> (App Router):</p><p></code>`<code>
+app/
+├── layout.tsx                        # Layout raíz (fuentes Geist, metadata)
+├── globals.css                       # Tokens de marca Tailwind v4
+├── page.tsx                          # Raíz "/": login o redirección a /dashboard
+├── icon.svg / favicon.ico
+├── login/
+│   ├── page.tsx                      # Alias que redirige a "/"
+│   ├── _components/LoginForm.tsx     # Formulario (client)
+│   ├── _components/LoginForm.module.css
+│   ├── libs/api.ts                   # Cliente fetch del login
+│   └── types/auth.ts                 # Tipos LoginRequest/Response
+└── dashboard/
+    ├── page.tsx                      # Panel (server, protegido)
+    ├── libs/session.ts               # obtenerUsuario() (servidor)
+    ├── libs/data.ts                  # Datos SIMULADOS (KPIs, módulos, solicitudes)
+    ├── types/dashboard.ts            # Tipos del panel
+    └── _components/                  # DashboardShell, Sidebar, ResumenKpis,
+                                      # AccesoRapido, SolicitudesRecientes, icons
+</code>`<code></p><p><h3>2.4 Modelo cliente-servidor y frontera de confianza</h3></p><p><li>El <strong>frontend</strong> cumple dos roles: (a) <em>cliente</em> (el </code>LoginForm<code> corre en el navegador y hace </code>fetch<code> al backend con </code>credentials: "include"<code>), y (b) <em>servidor de renderizado</em> (los componentes de servidor </code>page.tsx<code> y </code>session.ts<code> corren en el proceso Node de Next.js y leen la cookie </code>httpOnly<code> para reenviarla al backend en </code>GET /api/auth/me<code>).</li>
+<li>La <strong>única fuente de verdad de identidad</strong> es el backend: el JWT lo firma y verifica el backend; el frontend nunca decodifica el token (no puede: es </code>httpOnly<code>).</li>
+<li>La frontera de confianza está en el backend. El frontend <strong>no</strong> debe considerarse confiable para autorización.</li></p><p>---</p><p><h2>3. Análisis Línea por Línea (resumido)</h2></p><p>Esta sección resume el comportamiento archivo por archivo, con observaciones técnicas puntuales. Las referencias de línea corresponden a los archivos verificados.</p><p><h3>3.1 Backend — Autenticación</h3></p><p><h4></code>SecurityConfig.java<code></h4>
+<li>Define un </code>SecurityFilterChain<code> con <strong>sesión STATELESS</strong> (no hay </code>HttpSession<code>), CORS habilitado, <strong>CSRF deshabilitado</strong>, y </code>JwtCookieFilter<code> insertado antes de </code>UsernamePasswordAuthenticationFilter<code>.</li>
+<li><strong>Rutas públicas</strong> (</code>permitAll<code>): </code>/api/auth/<strong><code> (login, me, logout) y la documentación OpenAPI (</code>/v3/api-docs/</strong><code>, </code>/swagger-ui/<em></em><code>). Todo lo demás exige autenticación.</li>
+<li><strong>CORS</strong> (</code>corsConfigurationSource<code>): orígenes fijos </code>http://localhost:3000<code> y </code>http://localhost:3001<code>; métodos GET/POST/PUT/DELETE/PATCH/OPTIONS; <strong>todas</strong> las cabeceras (</code>*<code>); </code>allowCredentials=true<code>.</li>
+<li><strong>Observaciones:</strong></li>
+  - El comentario justifica desactivar CSRF por ser "API stateless con cookie </code>SameSite=Lax<code>". Es un argumento <strong>defendible</strong> (ver §5), pero el razonamiento solo se sostiene mientras la cookie sea </code>SameSite=Lax<code> <strong>y</strong> frontend y backend sean <em>same-site</em>.
+  - Los orígenes CORS están <strong>cableados a </code>localhost<code></strong>: no hay configuración por entorno para producción.
+  - Marcar </code>permitAll<code> en </code>/api/auth/me<code> es correcto: el propio endpoint decide 401 si no hay sesión.
+  - No se configuran cabeceras de seguridad explícitas (HSTS, CSP, etc.); se dependen de los valores por defecto de Spring Security (ver §5).</p><p><h4></code>JwtService.java<code></h4>
+<li>Firma tokens <strong>HS256</strong> (HMAC con secreto simétrico) usando Nimbus JOSE. </code>subject = cédula<code>, claim </code>eid = empleadoId<code>, con </code>issueTime<code>/</code>expirationTime<code>.</li>
+<li></code>expMinutes=120<code> (2 h) por defecto; </code>expMinutesRecordarme=10080<code> (7 días) si "Recordarme".</li>
+<li><strong></code>@PostConstruct validarSecreto()<code></strong>: falla el arranque si el secreto tiene < 32 bytes <strong>o</strong> contiene la cadena </code>"cambia-este-secreto"<code>.</li>
+<li></code>validar()<code>: verifica firma <strong>y</strong> expiración; ante cualquier excepción devuelve </code>Optional.empty()<code> (falla cerrada — correcto).</li>
+<li><strong>Observaciones:</strong></li>
+  - HS256 es adecuado para un monolito (una sola app firma y verifica). No requiere claves asimétricas.
+  - ⚠️ <strong>La validación del secreto es insuficiente.</strong> Solo rechaza la cadena literal </code>"cambia-este-secreto"<code>, pero el valor por defecto real en </code>application.properties<code> es </code>dev-only-secret-local-2026-unexca-talento-humano-32b<code> (50 bytes, sin esa subcadena) → <strong>pasa la validación</strong>. Un despliegue que olvide definir </code>APP_JWT_SECRET<code> arrancará con un secreto <strong>público (está en el repositorio)</strong>, permitiendo falsificar tokens. Ver hallazgo <strong>S-2</strong> en §5.
+  - No hay </code>jti<code> (identificador de token) ni mecanismo de <em>refresh</em>; la revocación se logra por otra vía (ver </code>JwtCookieFilter<code>).</p><p><h4></code>JwtCookieFilter.java<code></h4>
+<li>Extiende </code>OncePerRequestFilter<code>. Busca la cookie </code>"token"<code>; si existe y aún no hay autenticación en el contexto, valida el token y luego <strong>revalida contra la BD</strong> que el empleado exista (</code>findByCedula<code>) y esté <strong>activo</strong>.</li>
+<li>Si todo pasa, coloca un </code>UsernamePasswordAuthenticationToken<code> con </code>emp.getCedula()<code> como <em>principal</em> y <strong>lista de authorities vacía</strong> (</code>List.of()<code>).</li>
+<li><strong>Observaciones:</strong></li>
+  - ✅ <strong>Revocación efectiva:</strong> al desactivar una cuenta (</code>activo=false<code>), sus tokens dejan de funcionar en la siguiente petición sin esperar a la expiración. Es una decisión de seguridad acertada.
+  - ⚠️ <strong>Costo:</strong> implica una consulta a BD <strong>en cada petición autenticada</strong>. Aceptable a la escala prevista; a mayor escala convendría caché con invalidación.
+  - ⚠️ <strong>Authorities vacías:</strong> no hay roles ni granularidad de permisos (ver §5, hallazgo S-7).</p><p><h4></code>LoginController.java<code> (</code>/api/auth<code>)</h4>
+<li></code>POST /login<code>: valida el </code>LoginRequest<code>, autentica vía </code>LoginService<code>, genera el JWT y lo emite en una <strong>cookie </code>token<code></strong>: </code>httpOnly=true<code>, <strong></code>secure=false<code></strong>, </code>sameSite=Lax<code>, </code>path=/<code>, </code>maxAge = expSegundos<code> si "Recordarme" o </code>-1<code> (cookie de sesión) en caso contrario. Devuelve </code>LoginResponse{id, nombreCompleto}<code>.</li>
+<li></code>GET /me<code>: resuelve el usuario autenticado desde el </code>Authentication<code>; 401 si no hay sesión o el empleado no existe/activo. Devuelve </code>MeResponse{id, nombreCompleto, cédula, correo, iniciales}<code>.</li>
+<li></code>POST /logout<code>: emite cookie </code>token<code> vacía con </code>maxAge=0<code> → 204.</li>
+<li><strong>Observaciones:</strong></li>
+  - ⚠️ <strong></code>secure=false<code></strong> está marcado con comentario "poner true en producción (HTTPS)". Es un TODO crítico: hoy el token viaja en texto plano si se usa HTTP. Ver hallazgo <strong>S-1</strong>.
+  - Construcción de nombre/iniciales con métodos </code>safe<code>/</code>inicial<code> null-safe — correcto y defensivo.
+  - Buena separación: nunca se serializa la entidad </code>Empleado<code> completa hacia el cliente; solo DTOs (</code>LoginResponse<code>, </code>MeResponse<code>), evitando fugas de </code>passwordHash<code>.</p><p><h4></code>LoginService.java<code></h4>
+<li></code>autenticar(cédula, password)<code>: </code>findByCedula<code> → verifica BCrypt (</code>passwordEncoder.matches<code>) → filtra </code>activo<code> → si algo falla lanza </code>CredencialesInvalidasException("Cédula o contraseña incorrectas")<code>.</li>
+<li></code>porCedula(cédula)<code>: devuelve el empleado <strong>activo</strong> (para resolver la sesión en </code>/me<code>).</li>
+<li><strong>Observaciones:</strong></li>
+  - ✅ <strong>Mensaje de error genérico e idéntico</strong> para cédula inexistente, contraseña incorrecta y cuenta inactiva → previene <em>enumeración de usuarios</em>.
+  - ⚠️ <strong>Timing attack menor:</strong> cuando la cédula no existe no se ejecuta BCrypt, por lo que la respuesta es más rápida que con cédula válida y contraseña incorrecta. Esto puede filtrar la existencia de una cédula por tiempo de respuesta. Riesgo bajo, pero conocido (se mitiga ejecutando un hash "dummy").</p><p><h4>DTOs y excepción</h4>
+<li></code>LoginRequest<code> (record): </code>@NotBlank<code> en </code>cédula<code> y </code>password<code>; </code>recordarme<code> booleano.</li>
+<li></code>LoginResponse<code> (record): </code>{id, nombreCompleto}<code>.</li>
+<li></code>MeResponse<code> (record): </code>{id, nombreCompleto, cédula, correo, iniciales}<code>.</li>
+<li></code>CredencialesInvalidasException<code> extends </code>RuntimeException<code>.</li>
+<li></code>GlobalExceptionHandler<code>: mapea </code>CredencialesInvalidasException<code>→401 y </code>MethodArgumentNotValidException<code>→400, ambos como </code>{"mensaje": ...}<code>. Correcto y consistente con lo que el frontend espera.</li></p><p><h3>3.2 Backend — Dominio</h3></p><p><h4></code>Empleado.java<code> (entidad, tabla </code>empleados<code>)</h4>
+<li>Campos: </code>id<code> (IDENTITY), </code>primerNombre<code>, </code>segundoNombre<code>, </code>apellidoPaterno<code>, </code>apellidoMaterno<code>, </code>cedula<code> (<strong>unique, not null</strong>), </code>telefono<code>, </code>correo<code> (<strong>unique, not null, </code>@Email<code></strong>), </code>direccion<code>, </code>passwordHash<code> (not null), </code>activo<code> (not null, default </code>true<code>).</li>
+<li><strong>Observaciones:</strong></li>
+  - Nombres de columna explícitos salvo </code>passwordHash<code> y </code>activo<code> (usarán el <em>naming strategy</em> por defecto de Hibernate → </code>password_hash<code>, </code>activo<code>). Consistente pero conviene ser explícito.
+  - No hay campos de auditoría (</code>createdAt<code>, </code>updatedAt<code>, </code>createdBy<code>), ni roles, ni fecha de ingreso/egreso, ni cargo/salario — datos necesarios para prestaciones (antigüedad). Por esta carencia, el nuevo módulo de prestaciones (§3.6) <strong>no</strong> obtiene sus insumos de esta entidad, sino del cuerpo de la petición.
+  - </code>@Email<code> valida formato de correo a nivel de bean validation, pero <strong>no se dispara</strong> en el flujo actual (no hay endpoint que persista </code>Empleado<code> desde entrada de usuario; solo el seeder).</p><p><h4></code>EmpleadoRepository.java<code></h4>
+<li></code>JpaRepository<Empleado, Long><code> con un único método derivado: </code>findByCedula(String)<code>.</li>
+<li><strong>Observación:</strong> minimalista y suficiente para el login. No hay métodos de listado/paginación/filtrado (aún no se necesitan).</li></p><p><h4></code>DemoSeeder.java<code></h4>
+<li></code>@ConditionalOnProperty(app.seed-demo=true)<code> — <strong>desactivado por defecto</strong>. Crea el empleado </code>V-12345678<code> / </code>Unexca2026<code> (Ana María López Pérez) si no existe.</li>
+<li><strong>Observaciones:</strong></li>
+  - ✅ Condicional y idempotente. Bien acotado a desarrollo.
+  - ⚠️ Credencial de demo <strong>conocida y en el repositorio</strong>: aceptable en dev, pero debe garantizarse que </code>app.seed-demo<code> <strong>nunca</strong> sea </code>true<code> en producción.
+  - Es el <strong>único</strong> camino para crear usuarios hoy: no hay gestión de altas.</p><p><h4></code>application.properties<code></h4>
+<li>MySQL local </code>unexca_talento_humano<code> con </code>createDatabaseIfNotExist=true<code>.</li>
+<li></code>DB_USERNAME:root<code>, <strong></code>DB_PASSWORD:1234<code></strong> (valor por defecto embebido).</li>
+<li></code>spring.jpa.hibernate.ddl-auto=update<code>, </code>spring.jpa.show-sql=true<code>.</li>
+<li></code>APP_JWT_SECRET<code> con valor por defecto embebido; </code>exp-minutes=120<code>; </code>exp-minutes-recordarme=10080<code>.</li>
+<li></code>app.seed-demo=false<code> por defecto.</li>
+<li><strong>Observaciones:</strong> ver hallazgos <strong>S-2, S-3, S-5</strong> en §5. </code>ddl-auto=update<code> y </code>show-sql=true<code> son inadecuados para producción.</li></p><p><h3>3.3 Frontend — Login</h3></p><p><h4></code>page.tsx<code> (raíz </code>/<code>)</h4>
+<li><strong>Server component </code>async<code></strong>: si </code>obtenerUsuario()<code> devuelve sesión válida, </code>redirect("/dashboard")<code>; si no, renderiza </code>LoginForm<code>.</li>
+<li>Inyecta la fuente <strong>Tektur</strong> vía </code><link><code> a </code>fonts.googleapis.com<code> en tiempo de render.</li>
+<li><strong>Observaciones:</strong></li>
+  - ✅ Buen patrón: la protección/entrada se decide en el servidor antes de renderizar.
+  - ⚠️ Cargar la fuente con </code><link><code> externo (en lugar de </code>next/font<code>) añade una <strong>dependencia externa en tiempo de ejecución</strong> (privacidad/latencia/CSP). Debería migrarse a </code>next/font<code>.</p><p><h4></code>login/_components/LoginForm.tsx<code> (client)</h4>
+<li>Estado local para </code>cédula<code>, </code>password<code>, </code>recordarme<code>, </code>mostrar<code> (toggle de contraseña), </code>cargando<code>, </code>error<code>.</li>
+<li></code>onSubmit<code>: valida no-vacío, llama a </code>login()<code>, y en éxito </code>router.push("/dashboard")<code>; captura el error y lo muestra.</li>
+<li><strong>Observaciones:</strong></li>
+  - ✅ Accesibilidad razonable (</code>aria-label<code> en toggle, </code>autoComplete<code> correcto).
+  - UI de carga/errores adecuada. No hay validación de formato de cédula (podría añadirse).</p><p><h4></code>login/libs/api.ts<code></h4>
+<li></code>login()<code> hace </code>POST /api/auth/login<code> con </code>credentials: "include"<code> (imprescindible para la cookie) y extrae </code>{mensaje}<code> del cuerpo de error.</li>
+<li><strong>Observación:</strong> el </code>API<code> base sale de </code>NEXT_PUBLIC_API_URL<code> con <em>fallback</em> </code>http://localhost:8080<code>. Correcto.</li></p><p><h4></code>login/types/auth.ts<code> y </code>login/page.tsx<code></h4>
+<li>Tipos </code>LoginRequest<code>/</code>LoginResponse<code> alineados con el backend.</li>
+<li></code>login/page.tsx<code> es un <strong>alias</strong> que </code>redirect("/")<code> — única fuente de verdad de la pantalla de login en la raíz.</li></p><p><h3>3.4 Frontend — Dashboard</h3></p><p><h4></code>dashboard/page.tsx<code> (server, protegido)</h4>
+<li>Llama </code>obtenerUsuario()<code>; si no hay sesión, </code>redirect("/")<code>. Aplica la fuente <strong>Inter</strong> solo a este árbol. Renderiza </code>DashboardShell<code> con </code>ResumenKpis<code>, </code>AccesoRapido<code>, </code>SolicitudesRecientes<code> y una cabecera con fecha en </code>es-VE<code>.</li>
+<li><strong>Observaciones:</strong></li>
+  - ✅ <strong>Doble protección de ruta</strong>: raíz redirige al panel si hay sesión; panel redirige a la raíz si no la hay. Ambas decisiones en el servidor.
+  - Todo el contenido de datos proviene de </code>libs/data.ts<code> (<strong>simulado</strong>), salvo el </code>usuario<code> real (de </code>/me<code>).</p><p><h4></code>dashboard/libs/session.ts<code></h4>
+<li></code>obtenerUsuario()<code> (servidor): lee la cookie </code>httpOnly<code> </code>token<code> con </code>cookies()<code> y la <strong>reenvía</strong> a </code>GET /api/auth/me<code> con </code>cache: "no-store"<code>. Devuelve </code>UsuarioActual<code> o </code>null<code>.</li>
+<li><strong>Observación:</strong> patrón correcto para leer una cookie </code>httpOnly<code> que el JS de cliente no puede ver. El </code>no-store<code> evita cachear identidad — acertado.</li></p><p><h4></code>dashboard/_components/DashboardShell.tsx<code> (client)</h4>
+<li>Maneja el menú lateral móvil y el <strong>cierre de sesión</strong> (</code>POST /api/auth/logout<code> con </code>credentials:"include"<code>, luego </code>router.replace("/")<code> + </code>router.refresh()<code>).</li>
+<li><strong>Observación:</strong> el logout debe ser del lado del cliente para que el navegador procese el </code>Set-Cookie<code> que borra la sesión — comentario correcto en el código.</li></p><p><h4></code>Sidebar.tsx<code>, </code>ResumenKpis.tsx<code>, </code>AccesoRapido.tsx<code>, </code>SolicitudesRecientes.tsx<code>, </code>icons.tsx<code></h4>
+<li>Presentacionales. </code>Sidebar<code> muestra el usuario real (nombre, correo, iniciales) y navegación (todos los </code>href="#"<code>, sin destino). Los KPIs, módulos ("Próximamente") y solicitudes salen de </code>data.ts<code>.</li>
+<li></code>icons.tsx<code>: set de iconos SVG de línea (10 iconos) portados del diseño.</li>
+<li><strong>Observación:</strong> UI pulida y coherente con tokens de marca, pero <strong>inerte</strong>: ninguna acción del panel conduce a funcionalidad real.</li></p><p><h3>3.5 Frontend — Raíz / Layout / Estilos</h3></p><p><li></code>layout.tsx<code>: layout raíz con fuentes <strong>Geist</strong>. ⚠️ La </code>metadata<code> conserva el <em>boilerplate</em> </code>title: "Create Next App"<code> / </code>description: "Generated by create next app"<code> — debe corregirse (ver §6).</li>
+<li></code>globals.css<code>: define tokens de marca UNEXCA para Tailwind v4 (</code>--color-brand: #002e6b<code>, etc.). ⚠️ Conserva restos del <em>starter</em> (</code>--background/--foreground<code>, bloque </code>prefers-color-scheme: dark<code>, y </code>body { font-family: Arial }<code>) que conviven con los tokens de marca sin usarse plenamente — inconsistencia menor de higiene.</li>
+<li></code>next.config.ts<code>: <strong>vacío</strong> — no define cabeceras de seguridad (</code>headers()<code>), reescrituras ni proxy.</li></p><p><h3>3.6 Backend — Módulo de Prestaciones</h3></p><p>> <strong>Novedad v2.0.</strong> Este módulo se incorporó en los commits </code>deb5f12<code> ("implementar motor de cálculo de prestaciones sociales LOTTT con deducciones legales") y </code>335ff50<code>. Reside en el paquete </code>com.unexca.talentohumano.prestaciones<code> y consta de <strong>tres archivos (117 líneas)</strong>: un </code>record<code> de entrada, un controlador REST y un servicio con el motor de cálculo. Es el <strong>segundo módulo con lógica de negocio real</strong> del sistema y materializa el objetivo declarado en el README (cálculo de prestaciones conforme a normativa venezolana). El análisis normativo detallado —qué reglas de la LOTTT se implementan y qué brechas quedan— se encuentra en el <strong>Apéndice H</strong>.</p><p><h4></code>DatosLiquidacionRequest.java<code> (record, 14 campos)</h4>
+<li></code>record<code> inmutable con los insumos del cálculo: </code>empleadoId<code>, </code>fechaIngreso<code>/</code>fechaEgreso<code> (</code>LocalDate<code>), </code>motivoTerminacion<code> (texto libre), </code>sueldoTabla<code>, </code>primas<code>, </code>esSalarioVariable<code>, </code>promedioSueldoUltimos6Meses<code>, </code>diasBonoVacacional<code>, </code>diasAguinaldos<code>, </code>historicoAcumulado<code>, </code>anticipos<code>, </code>otrasDeudas<code>, </code>pensionAlimentaria<code>.</li>
+<li><strong>Observaciones:</strong></li>
+  - ⚠️ <strong>Sin validación de entrada.</strong> No hay anotaciones de <em>bean validation</em> (</code>@NotNull<code>, </code>@Positive<code>, </code>@PastOrPresent<code>); todos los tipos son envoltorios <em>nullable</em> (</code>Double<code>, </code>Integer<code>, </code>LocalDate<code>) y el controlador <strong>no</strong> usa </code>@Valid<code>. Un cuerpo con campos ausentes provoca <strong></code>NullPointerException<code> por <em>unboxing</strong></em> dentro del servicio, que emerge como <strong>HTTP 500</strong> (no está mapeado por </code>GlobalExceptionHandler<code>). Ver hallazgo <strong>S-13</strong>.
+  - ⚠️ <strong></code>empleadoId<code> se recibe pero nunca se usa.</strong> El motor es una <strong>calculadora pura</strong>: no consulta la BD ni vincula el resultado a ningún empleado. Todas las figuras salariales las provee el cliente en el cuerpo (ver <strong>S-14</strong> y Apéndice H).
+  - </code>motivoTerminacion<code> es <strong>texto libre</strong> (no un </code>enum<code>), lo que vuelve frágil la lógica de indemnización (ver servicio).
+  - El nombre </code>DatosLiquidacionRequest<code> sugiere una <em>liquidación</em> completa, pero los campos y el cálculo cubren <strong>solo prestaciones sociales</strong> (+ indemnización), no vacaciones/bono/utilidades fraccionados pendientes (ver Apéndice H, H.2.4).</p><p><h4></code>PrestacionController.java<code> (</code>/api/prestaciones<code>)</h4>
+<li>Controlador REST con un único endpoint: </code>POST /api/prestaciones/calcular<code>, que recibe </code>@RequestBody DatosLiquidacionRequest<code> y devuelve </code>ResponseEntity<Double><code> con el monto neto.</li>
+<li><strong>Autorización (verificado contra </code>SecurityConfig<code>):</strong> la ruta </code>/api/prestaciones/<strong><code> </strong>no<strong> figura en la lista </code>permitAll<code> (solo lo están </code>/api/auth/</strong><code> y la documentación OpenAPI); cae bajo </code>anyRequest().authenticated()<code>, por lo que <strong>exige la cookie JWT válida</strong>. ✅ Está protegido por autenticación.</li>
+<li><strong>Observaciones:</strong></li>
+  - ⚠️ <strong>Sin control por roles.</strong> Como </code>JwtCookieFilter<code> asigna <em>authorities</em> vacías (§3.1), <strong>cualquier empleado autenticado</strong> puede calcular la liquidación de <strong>cualquier</strong> persona con solo enviar sus cifras. Para un dato tan sensible como una liquidación laboral, la ausencia de roles (hallazgo <strong>S-7</strong>) deja de ser teórica y se vuelve material. Ver <strong>S-14</strong>.
+  - ⚠️ <strong>Respuesta como </code>Double<code> desnudo.</strong> Devuelve un único número, sin desglose (salario integral, días computados, alícuotas, deducciones aplicadas). Para trazabilidad y auditoría legal se esperaría un DTO con el detalle del cálculo. Además, serializar un </code>double<code> arrastra el problema de precisión monetaria (ver <strong>S-15</strong>).
+  - </code>@PostMapping<code> es adecuado (operación con cuerpo, no idempotente ni cacheable). El controlador es una fina fachada: delega toda la lógica en el servicio.</p><p><h4></code>PrestacionService.java<code> — motor de cálculo (líneas 10-72)</h4>
+El método </code>calcularPrestacionesSociales(DatosLiquidacionRequest)<code> concentra toda la lógica de negocio. Recorrido por bloques:</p><p>1. <strong>Antigüedad (líneas 12-17).</strong> </code>Period.between(fechaIngreso, fechaEgreso)<code> descompone la antigüedad en </code>anos<code>/</code>meses<code>/</code>dias<code>; </code>totalMesesCompletos = anos*12 + meses<code>. ⚠️ Si las fechas son </code>null<code> → NPE; si </code>fechaEgreso < fechaIngreso<code>, </code>Period<code> produce componentes <strong>negativos</strong> y el resultado se corrompe silenciosamente (no hay validación de orden de fechas).</p><p>2. <strong>Salario normal mensual (líneas 19-24).</strong> Si </code>esSalarioVariable == TRUE<code> (comparación <em>null-safe</em> con </code>Boolean.TRUE.equals(...)<code>), usa </code>promedioSueldoUltimos6Meses<code>; en caso contrario, </code>sueldoTabla + primas<code>. ⚠️ En la rama variable, si </code>promedioSueldoUltimos6Meses<code> es </code>null<code> → NPE por <em>unboxing</em>; en la rama fija, si </code>sueldoTabla<code> o </code>primas<code> son </code>null<code> → NPE.</p><p>3. <strong>Salario integral diario (líneas 26-30).</strong> Núcleo normativo (LOTTT Art. 122):
+   - </code>salarioNormalDiario = salarioNormalMensual / 30.0<code> (mes comercial de 30 días).
+   - </code>alicuotaVacacional = (salarioNormalDiario * diasBonoVacacional) / 360.0<code> — alícuota diaria del bono vacacional.
+   - </code>alicuotaAguinaldos = (salarioNormalDiario * diasAguinaldos) / 360.0<code> — alícuota diaria de aguinaldos/utilidades.
+   - </code>salarioIntegralDiario = salarioNormalDiario + alicuotaVacacional + alicuotaAguinaldos<code>.
+   - ✅ El uso de los divisores 30 (mes) y 360 (año comercial) es la convención estándar venezolana; este <em>salario integral</em> es la base correcta para prestaciones.</p><p>4. <strong>Monto base de prestaciones (líneas 32-46).</strong> Se bifurca en dos ramas:
+   - <strong>Rama A — antigüedad < 3 meses (líneas 34-36):</strong> </code>mesesAPagar = totalMesesCompletos + (dias>0 ? 1 : 0)<code> (redondea hacia arriba el mes parcial); </code>montoBasePrestaciones = (mesesAPagar <em> 5) </em> salarioIntegralDiario<code>. Los <strong>5 días por mes</strong> equivalen a la <strong>garantía</strong> de 15 días por trimestre (LOTTT Art. 142.a).
+   - <strong>Rama B — resto (líneas 38-45):</strong> </code>anosServicio = anos<code>, incrementado en 1 si </code>meses > 6<code> o (</code>meses == 6 && dias > 0<code>) → aplica la regla "fracción <strong>superior</strong> a seis meses se computa como un año" (Art. 142.c). Luego </code>retroactivo = (anosServicio <em> 30) </em> salarioIntegralDiario<code> (30 días por año sobre el último salario integral) y </code>montoBasePrestaciones = Math.max(historicoAcumulado, retroactivo)<code> → el trabajador recibe el <strong>mayor</strong> entre lo acumulado (garantía, Art. 142.a-b) y el retroactivo (Art. 142.d). ✅ Refleja fielmente el "mayor de" de la LOTTT.
+   - ⚠️ <strong>Brecha 3-6 meses:</strong> para </code>anos == 0<code> y </code>meses<code> en [3, 6], la Rama B da </code>anosServicio = 0<code> → </code>retroactivo = 0<code> → </code>montoBase = historicoAcumulado<code>. Si </code>historicoAcumulado<code> es 0 (no se lleva registro externo), el trabajador obtiene <strong>0</strong> pese a haber generado garantía. El motor <strong>no</strong> calcula por sí mismo la acumulación de la garantía (Art. 142.a-b) para el rango de 3 a 12 meses: la delega enteramente en el insumo </code>historicoAcumulado<code>. Detalle en Apéndice H (H.2.2).</p><p>5. <strong>Indemnización doble (líneas 48-57).</strong> </code>motivo = motivoTerminacion.toUpperCase()<code> (null-safe); si pertenece al conjunto </code>{"DESPIDO INJUSTIFICADO", "RETIRO JUSTIFICADO", "CAUSAS AJENAS"}<code> → </code>montoBasePrestaciones <em>= 2<code>. ✅ Implementa la indemnización del Art. 92 LOTTT (monto igual al de las prestaciones). ⚠️ El </em>match* es por <strong>texto exacto</strong> sobre un campo libre: cualquier variación ("DESPIDO SIN JUSTA CAUSA", sinónimos, texto adicional) <strong>no</strong> duplica. Debería tipificarse con un </code>enum<code> de causales.</p><p>6. <strong>Deducciones (líneas 59-69).</strong>
+   - </code>netoAPagar = montoBase - anticipos<code> (con <em>fallback</em> 0 si </code>anticipos<code> es null).
+   - </code>otrasDeudas<code>: se calcula el tope </code>limiteDescuentoDeudas = netoAPagar * 0.50<code> y se descuenta </code>min(otrasDeudas, tope)<code> → <strong>máximo 50 %</strong> del neto (interpretación de los límites de deducción, Art. 154 LOTTT).
+   - </code>pensionAlimentaria<code>: se descuenta <strong>íntegra, sin tope alguno</strong>.
+   - ⚠️ <strong>Sin piso en cero:</strong> si las deducciones superan la base, </code>netoAPagar<code> puede quedar <strong>negativo</strong> (falta un </code>Math.max(0, …)<code>).
+   - ⚠️ <strong>El orden importa:</strong> los anticipos se restan <strong>antes</strong> de calcular el tope del 50 %, y la pensión alimentaria se resta al final sin límite; la base sobre la que aplica el tope del 50 % depende de ese orden de operaciones.</p><p>7. <strong>Retorno (línea 71).</strong> </code>return netoAPagar;<code> de tipo </code>double<code>. ⚠️ <strong>Toda la aritmética monetaria es en coma flotante (</code>double<code>)</strong>, inadecuado para montos legales: introduce errores de redondeo acumulativos y no permite reglas de redondeo a céntimos reproducibles. Debería migrarse a </code>BigDecimal<code> con </code>RoundingMode<code> explícito. Ver <strong>S-15</strong>.</p><p><strong>Síntesis del módulo.</strong> Motor <strong>funcional</strong> que codifica correctamente los pilares de la LOTTT (salario integral, "mayor de" garantía/retroactivo, fracción superior a 6 meses, indemnización del Art. 92 y topes de deducción). Sus limitaciones —ausencia de validación, </code>double<code> para dinero, sin persistencia ni auditoría, sin control por rol, cifras provistas por el cliente, brecha en el rango 3-6 meses y varias reglas normativas no cubiertas— se detallan en §5 (seguridad), §6 (deuda técnica) y el <strong>Apéndice H</strong> (análisis normativo).</p><p>---</p><p><h2>4. Flujos Principales</h2></p><p><h3>4.1 Flujo de Login (inicio de sesión)</h3></p><p></code>`<code>mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant F as LoginForm (cliente)
+    participant B as LoginController (/api/auth/login)
+    participant S as LoginService
+    participant J as JwtService
+    participant DB as MySQL (empleados)</p><p>    U->>F: Ingresa cédula + contraseña + "Recordarme"
+    F->>B: POST /api/auth/login (credentials: include)
+    B->>S: autenticar(cédula, password)
+    S->>DB: findByCedula(cédula)
+    DB-->>S: Empleado (o vacío)
+    S->>S: BCrypt.matches(password, hash) && activo
+    alt Credenciales inválidas / cuenta inactiva
+        S-->>B: CredencialesInvalidasException
+        B-->>F: 401 { "mensaje": "Cédula o contraseña incorrectas" }
+        F-->>U: Muestra error
+    else Credenciales válidas
+        S-->>B: Empleado
+        B->>J: generar(cédula, id, recordarme)
+        J-->>B: JWT (HS256)
+        B-->>F: 200 + Set-Cookie token (httpOnly, SameSite=Lax) + {id, nombreCompleto}
+        F->>F: router.push("/dashboard")
+        F-->>U: Redirige al panel
+    end
+</code>`<code></p><p><h3>4.2 Flujo de Autenticación por petición (filtro)</h3></p><p></code>`<code>mermaid
+sequenceDiagram
+    autonumber
+    participant C as Cliente/Navegador
+    participant SC as SecurityFilterChain
+    participant JF as JwtCookieFilter
+    participant J as JwtService
+    participant DB as MySQL (empleados)
+    participant R as Recurso protegido</p><p>    C->>SC: Petición con cookie "token"
+    SC->>JF: doFilterInternal
+    JF->>JF: ¿Existe cookie "token" y no hay auth previa?
+    JF->>J: validar(token)  (firma + expiración)
+    alt Token inválido/expirado
+        J-->>JF: Optional.empty()
+        JF->>SC: continúa sin autenticar
+        SC-->>C: 401/403 si el recurso exige auth
+    else Token válido
+        J-->>JF: Claims {cédula, eid}
+        JF->>DB: findByCedula(cédula)
+        DB-->>JF: Empleado
+        JF->>JF: ¿emp.activo == true?  (revocación)
+        alt Activo
+            JF->>SC: setAuthentication (principal=cédula, authorities=[])
+            SC->>R: Accede al recurso
+            R-->>C: 200
+        else Inactivo
+            JF->>SC: no autentica → 401/403
+        end
+    end
+</code>`<code></p><p><h3>4.3 Flujo de Sesión (resolución de identidad y protección de rutas)</h3></p><p></code>`<code>mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant N as Next.js (servidor)
+    participant SS as session.ts (obtenerUsuario)
+    participant B as /api/auth/me
+    participant DB as MySQL</p><p>    U->>N: GET /dashboard
+    N->>SS: obtenerUsuario()
+    SS->>SS: lee cookie httpOnly "token" (cookies())
+    alt Sin cookie
+        SS-->>N: null
+        N-->>U: redirect("/")  (a login)
+    else Con cookie
+        SS->>B: GET /api/auth/me (reenvía cookie, no-store)
+        B->>DB: (vía filtro) valida token + activo
+        alt Sesión válida
+            B-->>SS: 200 MeResponse {id, nombre, cédula, correo, iniciales}
+            SS-->>N: UsuarioActual
+            N-->>U: Renderiza el panel con datos del usuario
+        else Sesión inválida
+            B-->>SS: 401
+            SS-->>N: null
+            N-->>U: redirect("/")
+        end
+    end
+</code>`<code></p><p><h3>4.4 Modelo de datos (estado actual)</h3></p><p></code>`<code>mermaid
+erDiagram
+    EMPLEADOS {
+        BIGINT id PK "IDENTITY"
+        VARCHAR primer_nombre
+        VARCHAR segundo_nombre
+        VARCHAR apellido_paterno
+        VARCHAR apellido_materno
+        VARCHAR cedula UK "NOT NULL, UNIQUE"
+        VARCHAR telefono
+        VARCHAR correo UK "NOT NULL, UNIQUE, @Email"
+        VARCHAR direccion
+        VARCHAR password_hash "NOT NULL (BCrypt)"
+        BOOLEAN activo "NOT NULL, default true"
+    }
+</code>`<code></p><p>> El esquema lo genera Hibernate (</code>ddl-auto=update<code>). <strong>Hoy solo existe la tabla </code>empleados<code>.</strong> El módulo de prestaciones (§3.6) es un <strong>motor sin estado</strong>: calcula a partir del cuerpo de la petición y <strong>no persiste nada</strong> (no hay tabla de liquidaciones, insumos ni auditoría — ver Apéndice H, H.2.8). Los módulos de correspondencia y administración tampoco tienen tablas.</p><p>---</p><p><h2>5. Seguridad</h2></p><p><h3>5.1 Postura de seguridad actual (síntesis)</h3></p><p>El módulo de autenticación demuestra <strong>conciencia de seguridad por encima del promedio</strong> para un proyecto en etapa temprana. Se evidencian decisiones deliberadas y bien comentadas: hashing con BCrypt, cookie </code>httpOnly<code> (mitiga robo de token por XSS), </code>SameSite=Lax<code> (mitiga CSRF), mensajes de error genéricos (previenen enumeración de usuarios), revocación por estado </code>activo<code>, y sesiones <em>stateless</em>. El historial de git incluso muestra un commit </code>fix(back/login): harden auth per security review<code>, señal de un ciclo de revisión previo.</p><p>Sin embargo, <strong>el sistema no está listo para producción</strong>. Los riesgos se concentran en configuración/despliegue (secretos y transporte) y en ausencias (fuerza bruta, roles, auditoría). A continuación, los hallazgos priorizados.</p><p>El nuevo <strong>módulo de prestaciones</strong> (§3.6) hereda la postura "autenticado pero sin roles" y añade superficie propia: al no validar la entrada puede degradarse a HTTP 500 ante cuerpos malformados (<strong>S-13</strong>), y —por tratar un dato altamente sensible (una liquidación laboral) accesible a <strong>cualquier</strong> usuario autenticado, sin persistencia ni auditoría y con cifras provistas por el cliente— eleva la importancia práctica del control de acceso por rol (<strong>S-14</strong>, que refuerza a <strong>S-7</strong>).</p><p><h3>5.2 Hallazgos priorizados</h3></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p><h3>5.3 Detalle y recomendaciones de los hallazgos críticos</h3></p><p><strong>S-1 · Cookie </code>Secure=false<code>.</strong> Hoy la cookie </code>token<code> puede transmitirse por HTTP sin cifrar, exponiéndola a interceptación (MITM). El código lo reconoce con </code>// poner true en producción<code>.
+→ <strong>Recomendación:</strong> externalizar el flag (</code>app.cookie.secure=${COOKIE_SECURE:false}<code>) y forzar </code>true<code> en producción tras servir todo por HTTPS/TLS. Añadir HSTS (S-6).</p><p><strong>S-2 · Secreto JWT por defecto embebido.</strong> El valor </code>dev-only-secret-local-2026-unexca-talento-humano-32b<code> está en el repositorio y <strong>supera</strong> la validación (≥32 bytes y sin la subcadena </code>"cambia-este-secreto"<code>). Si producción arranca sin </code>APP_JWT_SECRET<code>, cualquiera con acceso al repo puede <strong>firmar tokens válidos</strong> y suplantar a cualquier empleado.
+→ <strong>Recomendación:</strong> (a) endurecer </code>validarSecreto()<code> para rechazar también el valor de desarrollo conocido (o exigir que el secreto <strong>no</strong> provenga del valor por defecto en el perfil </code>prod<code>); (b) mejor aún, <strong>no</strong> proveer valor por defecto en producción: usar perfiles Spring (</code>application-prod.properties<code>) sin <em>fallback</em>, de modo que la app <strong>falle al arrancar</strong> si el secreto no está definido; (c) rotar el secreto (invalida todos los tokens).</p><p><strong>S-3 · Contraseña de BD por defecto.</strong> </code>DB_PASSWORD:1234<code> como <em>fallback</em>. Aunque el commit </code>chore(security): externalize DB credentials<code> externalizó el valor, el <em>fallback</em> embebido sigue siendo un riesgo si el entorno no define la variable.
+→ <strong>Recomendación:</strong> eliminar el <em>fallback</em> en el perfil de producción; que la app falle si </code>DB_PASSWORD<code> no está definido. Rotar la contraseña real.</p><p><h3>5.4 Aspectos de seguridad bien resueltos (a preservar)</h3></p><p><li>✅ <strong>BCrypt</strong> para contraseñas (algoritmo adaptativo, con <em>salt</em> por hash).</li>
+<li>✅ <strong>Cookie </code>httpOnly<code></strong> — el token no es accesible desde JS, mitigando robo por XSS.</li>
+<li>✅ <strong></code>SameSite=Lax<code></strong> — mitiga CSRF sin necesidad de tokens anti-CSRF (justifica el </code>csrf.disable()<code>).</li>
+<li>✅ <strong>Mensajes de error genéricos</strong> — no revelan si la cuenta existe o está inactiva.</li>
+<li>✅ <strong>Revocación por </code>activo<code></strong> en cada petición — desactivar una cuenta corta el acceso de inmediato.</li>
+<li>✅ <strong>Sesiones STATELESS</strong> — sin estado de sesión en servidor, escalable horizontalmente.</li>
+<li>✅ <strong>DTOs de salida</strong> — nunca se serializa la entidad </code>Empleado<code> (evita fuga de </code>passwordHash<code>).</li>
+<li>✅ <strong></code>app.seed-demo=false<code></strong> por defecto — el usuario de demostración no se crea salvo activación explícita.</li></p><p><h3>5.5 Nota sobre CSRF y </code>SameSite<code></h3></p><p>Desactivar CSRF es <strong>aceptable hoy</strong> porque: (1) la autenticación es por cookie </code>SameSite=Lax<code>, que el navegador <strong>no</strong> envía en peticiones POST <em>cross-site</em>; y (2) frontend (</code>localhost:3000/3001<code>) y backend (</code>localhost:8080<code>) son <em>same-site</em> (mismo </code>localhost<code>; el puerto no afecta la condición <em>same-site</em>). <strong>Advertencia para producción:</strong> si el frontend y el backend quedaran en <strong>dominios distintos</strong> (no <em>same-site</em>), la cookie </code>SameSite=Lax<code> <strong>dejaría de enviarse</strong> en las peticiones del frontend y la app se rompería; habría que usar </code>SameSite=None; Secure<code> y <strong>reactivar CSRF</strong> o adoptar otro esquema (p. ej. token en cabecera). Esta decisión arquitectónica debe tomarse antes del despliegue.</p><p>---</p><p><h2>6. Deuda Técnica y Brechas</h2></p><p><h3>6.1 Funcionalidad ausente (brechas de producto)</h3></p><p>1. <strong>2 de 4 módulos de negocio no existen; el de prestaciones existe pero incompleto.</strong> Administración y Correspondencia son solo tarjetas "Próximamente". El <strong>Cálculo de Prestaciones</strong> —objetivo central del sistema— ya tiene un motor backend funcional (§3.6), pero <strong>sin interfaz de usuario, sin persistencia/auditoría, sin integración con el CRUD de empleados</strong> (recibe las cifras por el cuerpo e ignora </code>empleadoId<code>) y con varias reglas normativas pendientes (Apéndice H). El panel sigue mostrándolo como "Próximamente".
+2. <strong>Sin CRUD de empleados.</strong> Existe la entidad y el repositorio, pero no hay endpoints para crear/editar/listar/desactivar empleados. El único alta posible es vía </code>DemoSeeder<code>. Esta ausencia bloquea que el motor de prestaciones obtenga los insumos salariales de una fuente de verdad.
+3. <strong>Sin gestión de contraseñas.</strong> No hay cambio de contraseña, recuperación, ni política de complejidad/expiración.
+4. <strong>Panel con datos 100% simulados.</strong> KPIs, módulos y solicitudes provienen de </code>dashboard/libs/data.ts<code>; ninguna cifra es real.
+5. <strong>Navegación inerte.</strong> Todos los enlaces del </code>Sidebar<code> y del panel apuntan a </code>#<code>.</p><p><h3>6.2 Deuda técnica (calidad interna)</h3></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p><h3>6.3 Brechas operativas (DevOps)</h3></p><p><li><strong>Sin CI/CD</strong> verificable en el repo.</li>
+<li><strong>Sin Dockerfile / manifiestos de despliegue</strong> (aunque hay soporte GraalVM nativo configurado). <strong>[NO VERIFICADO más allá de la ausencia de archivos]</strong></li>
+<li><strong>Sin observabilidad</strong>: no se incluye Spring Boot Actuator, métricas ni configuración de logging estructurado.</li>
+<li><strong>Sin migraciones de esquema</strong> (Flyway/Liquibase); se depende de </code>ddl-auto=update<code>, que no es seguro para evolucionar esquemas en producción.</li>
+<li><strong>Sin estrategia de <em>backup</em>/retención</strong> de la BD documentada.</li></p><p>---</p><p><h2>7. Recomendaciones Priorizadas</h2></p><p>Roadmap sugerido en tres olas. Cada ítem indica el/los hallazgos o brechas que resuelve.</p><p><h3>Ola 1 — Endurecimiento para producción (bloqueante antes de cualquier despliegue)</h3></p><p>1. <strong>Perfiles de Spring (</code>dev<code>/</code>prod<code>)</strong> y eliminación de <em>fallbacks</em> de secretos en </code>prod<code>. La app debe <strong>fallar al arrancar</strong> si faltan </code>APP_JWT_SECRET<code>, </code>DB_PASSWORD<code>. <em>(S-2, S-3, S-5)</em>
+2. <strong>HTTPS + </code>Secure=true<code></strong> en la cookie, externalizando el flag por entorno. <em>(S-1)</em>
+3. <strong>Cabeceras de seguridad</strong>: HSTS y </code>Content-Security-Policy<code> (esta última permitiría además controlar la fuente externa de Google Fonts), </code>X-Content-Type-Options<code>, etc., tanto en Spring (</code>http.headers(...)<code>) como en </code>next.config.ts<code> (</code>headers()<code>). <em>(S-6, S-12)</em>
+4. <strong></code>ddl-auto=validate<code></strong> en producción + introducir <strong>Flyway/Liquibase</strong> para migraciones versionadas. <em>(S-5, §6.3)</em>
+5. <strong>Rate limiting / bloqueo temporal</strong> de intentos de login (por IP y por cédula). <em>(S-4)</em>
+6. <strong>CORS por entorno</strong> (orígenes reales de producción, no </code>localhost<code>). <em>(S-10)</em></p><p><h3>Ola 2 — Cimientos de dominio y control de acceso</h3></p><p>7. <strong>Modelo de roles/authorities</strong> (</code>ROLE_ADMIN<code>, </code>ROLE_RRHH<code>, etc.) incluido en el JWT y aplicado con </code>@PreAuthorize<code>/</code>authorizeHttpRequests<code>, especialmente para el módulo de Administración. <em>(S-7)</em>
+8. <strong>CRUD de empleados</strong> (altas, edición, desactivación) con validación (</code>@Email<code>, formato de cédula) y paginación.
+9. <strong>Gestión de contraseñas</strong>: cambio obligatorio en primer ingreso, política de complejidad y flujo de recuperación.
+10. <strong>Auditoría</strong>: registrar login exitoso/fallido, logout y cambios sensibles (tabla de auditoría o log estructurado). <em>(S-8)</em>
+11. <strong>Campos de dominio en </code>Empleado<code></strong>: cargo, fecha de ingreso, salario base, y auditoría (</code>createdAt<code>/</code>updatedAt<code>) — prerrequisito para prestaciones.</p><p><h3>Ola 3 — Módulos de negocio y calidad</h3></p><p>12. <strong>Endurecer el módulo de Cálculo de Prestaciones</strong> (ya existe un motor funcional, §3.6): (a) migrar la aritmética a </code>BigDecimal<code> con redondeo explícito <em>(S-15)</em>; (b) añadir <em>bean validation</em> (</code>@Valid<code>, </code>@NotNull<code>, </code>@PastOrPresent<code>, orden de fechas) y devolver un DTO con <strong>desglose</strong> del cálculo <em>(S-13)</em>; (c) tipificar </code>motivoTerminacion<code> como </code>enum<code>; (d) cubrir la <strong>brecha 3-12 meses</strong> de la garantía (Apéndice H, H.2.2) y las reglas normativas faltantes (intereses Art. 143, conceptos fraccionados); (e) <strong>persistir</strong> insumos, resultado, autor y fecha con auditoría <em>(S-14)</em>; (f) obtener los insumos salariales del CRUD de empleados en vez del cuerpo; (g) restringir por <strong>rol</strong> (RRHH) <em>(S-7)</em>; (h) <strong>pruebas exhaustivas con casos oficiales</strong> por su criticidad legal, y <strong>validación jurídica</strong> de las reglas (Apéndice H); (i) construir la <strong>interfaz de usuario</strong> del módulo.
+13. <strong>Módulo de Correspondencia</strong> y <strong>Administración</strong>.
+14. <strong>Conectar el panel a datos reales</strong> (reemplazar </code>data.ts<code>).
+15. <strong>Cobertura de pruebas</strong>: tests de controlador e integración (</code>@SpringBootTest<code> + </code>spring-security-test<code>), test del </code>JwtCookieFilter<code>, verificación de modularidad de Spring Modulith (</code>ApplicationModules.verify()<code>), y pruebas de frontend (al menos del flujo de login).
+16. <strong>Observabilidad</strong>: Actuator + métricas + logging estructurado; <strong>DevOps</strong>: Dockerfile, pipeline CI/CD, <em>backups</em>.
+17. <strong>Higiene</strong>: corregir metadata </code>layout.tsx<code>, limpiar </code>globals.css<code>, eliminar </code>boceto-login/loginService.java.txt<code>, migrar fuentes a </code>next/font<code>. <em>(§6.2)</em></p><p><h3>Matriz esfuerzo/impacto (orientativa)</h3></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p>---</p><p><h2>8. Glosario</h2></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p>---</p><p><h2>Apéndices</h2></p><p><h3>Apéndice A — Inventario de endpoints (backend)</h3></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p>\<em> </code>logout<code> está bajo </code>/api/auth/</em>*<code> (público); simplemente emite una cookie de borrado.
+† </code>/api/prestaciones/calcular<code> <strong>no</strong> está en </code>permitAll<code>; requiere cookie JWT válida, pero <strong>sin control por rol</strong> (cualquier usuario autenticado — ver S-7/S-14). No hay </code>@Valid<code> en la entrada, por lo que un cuerpo malformado degrada a HTTP 500 (S-13).</p><p><h3>Apéndice B — Rutas del frontend</h3></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p><h3>Apéndice C — Parámetros de configuración clave (</code>application.properties<code>)</h3></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p><h3>Apéndice D — Credenciales de demostración (solo dev, </code>app.seed-demo=true<code>)</h3></p><p><li><strong>Cédula:</strong> </code>V-12345678<code></li>
+<li><strong>Contraseña:</strong> </code>Unexca2026<code></li>
+<li><strong>Empleado:</strong> Ana María López Pérez — </code>ana.lopez@unexca.edu.ve<code></li></p><p>> ⚠️ Conocidas públicamente (en el repositorio). Garantizar </code>app.seed-demo=false<code> fuera de desarrollo.</p><p><h3>Apéndice E — Cobertura de pruebas actual</h3></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p><strong>Sin cobertura:</strong> </code>LoginController<code>, </code>JwtCookieFilter<code>, </code>SecurityConfig<code>, </code>GlobalExceptionHandler<code>, integración con Spring Security, <strong>todo el módulo de prestaciones</strong> (</code>PrestacionService<code>, </code>PrestacionController<code>) y todo el frontend.</p><p>> ⚠️ La <strong>ausencia total de pruebas del motor de prestaciones</strong> es especialmente grave dada su criticidad legal: cada rama del cálculo (garantía < 3 meses, retroactivo, fracción > 6 meses, "mayor de", indemnización doble, topes de deducción) debería cubrirse con casos oficiales. Ver §7, recomendación 12h.</p><p><h3>Apéndice F — Historial de commits relevante (rama </code>main<code>)</h3></p><p></code>`<code>
+335ff50 Eliminar comentarios innecesarios en PrestacionController.java
+deb5f12 implementar motor de cálculo de prestaciones sociales LOTTT con deducciones legales
+3e53259 feat(dashboard): add dashboard UI and /me session endpoint
+887c11a chore(security): externalize DB credentials and harden .gitignore
+a8e94f7 feat(front): serve login at root "/" + add dashboard placeholder
+a59d9ed feat(front/login): sharper white logo + larger size
+2d4d700 fix(back/cors): allow localhost:3001 origin for dev
+544ce4d feat(front): add UNEXCA skyline favicon (SVG)
+8d51697 feat(front/login): implement login form (design v4)
+c529b4d fix(back/login): harden auth per security review
+c5dfe83 feat(back/login): implement cédula+password auth with httpOnly JWT cookie
+9a1bcfe feat(front): add logo and login module scaffold
+</code>`<code></p><p>El historial evidencia un desarrollo incremental centrado primero en autenticación (con un ciclo explícito de <em>hardening</em> de seguridad), luego en la maqueta del panel y, más recientemente (</code>deb5f12<code>), en el <strong>motor de cálculo de prestaciones</strong> —cuyo mensaje de commit cita explícitamente la "LOTTT", confirmando la intención normativa del módulo—.</p><p><h3>Apéndice G — Limitaciones de este análisis</h3></p><p><li>El análisis es <strong>estático</strong> (lectura de código); no se ejecutó la aplicación ni se realizaron pruebas dinámicas/penetración.</li>
+<li>No se evaluaron los artefactos generados (</code>back/build<code>, </code>front/.next<code>, </code>node_modules<code>), por ser derivados.</li>
+<li>La ausencia de CI/CD, Dockerfile y observabilidad se infiere de la <strong>ausencia</strong> de archivos correspondientes en las rutas convencionales; podría existir configuración externa al repositorio <strong>[NO VERIFICADO]</strong>.</li>
+<li>Las cabeceras de seguridad "por defecto" de Spring Security no se comprobaron en ejecución; se reporta que <strong>no se configuran explícitamente</strong> en el código.</li>
+<li>El análisis normativo del Apéndice H evalúa la <strong>coherencia del código con reglas de la LOTTT</strong>; no constituye una validación jurídica. Las referencias a artículos se marcan <strong>[NO VERIFICADO]</strong> en cuanto a su exactitud y vigencia legal.</li></p><p>---</p><p><h3>Apéndice H — Análisis normativo del cálculo de prestaciones</h3></p><p>Este apéndice evalúa <strong>qué reglas de la normativa laboral venezolana</strong> implementa el motor de </code>PrestacionService<code> (§3.6) y qué <strong>brechas</strong> quedan. El marco de referencia es principalmente la <strong>LOTTT</strong> (Ley Orgánica del Trabajo, los Trabajadores y las Trabajadoras, 2012). El mensaje del commit que introdujo el módulo (</code>deb5f12<code>) cita explícitamente "LOTTT", lo que confirma la intención normativa; este análisis contrasta esa intención con lo efectivamente codificado.</p><p><h4>H.1 Reglas implementadas (y su base legal)</h4></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p>> <strong>[NO VERIFICADO]</strong> Las referencias a artículos de la LOTTT y la LOPNNA se ofrecen como marco interpretativo del código; su exactitud jurídica y vigencia deben ser confirmadas por un especialista en derecho laboral venezolano.</p><p><h4>H.2 Brechas y riesgos normativos</h4></p><p>1. <strong>Garantía Art. 142.a-b no autocalculada.</strong> Los 2 días adicionales por año a partir del 2.º año (hasta 30, Art. 142.b) y, en general, la acumulación trimestral de la garantía, <strong>no</strong> se calculan en el motor: se delegan por completo al insumo </code>historicoAcumulado<code>. Si ese valor no está bien alimentado por un sistema externo, el "mayor de" (Art. 142.d) queda subestimado.</p><p>2. <strong>Rango de 3 a 12 meses sin garantía propia.</strong> Como se detalla en §3.6 (punto 4), con </code>anos == 0<code> y </code>meses ≤ 6<code> la Rama B produce </code>retroactivo = 0<code>, de modo que el resultado depende únicamente de </code>historicoAcumulado<code>. Un trabajador con 3-6 meses y sin histórico registrado obtiene <strong>0</strong>. Es una discontinuidad relevante: entre "< 3 meses" (que sí recibe 5 días/mes) y "> 6 meses" (que recibe 30 días/año) hay una franja sin cálculo propio.</p><p>3. <strong>Intereses sobre prestaciones (Art. 143) no calculados.</strong> La garantía genera intereses mensuales a favor del trabajador; el motor no los contempla.</p><p>4. <strong>Alcance: "prestaciones", no "liquidación completa".</strong> Pese al nombre </code>DatosLiquidacionRequest<code>, el motor calcula <strong>solo</strong> prestaciones sociales (+ indemnización). Una liquidación real incluye además <strong>vacaciones fraccionadas, bono vacacional fraccionado y utilidades/aguinaldos fraccionados</strong> pendientes al egreso (Art. 131, 132, 196 LOTTT), que aquí no se computan.</p><p>5. <strong>Salario variable aproximado.</strong> Usa el promedio de los últimos 6 meses (</code>promedioSueldoUltimos6Meses<code>); la LOTTT define promedios por componente y período que pueden diferir. Marcado como aproximación razonable pero no exhaustiva.</p><p>6. <strong>Motivo de terminación como texto libre.</strong> El <em>match</em> exacto (en mayúsculas) sobre </code>motivoTerminacion<code> es frágil: cualquier variación de redacción no dispara la indemnización del Art. 92. Debería tipificarse con un </code>enum<code> de causales.</p><p>7. <strong>Precisión monetaria en </code>double<code>.</strong> Los cálculos con efectos legales deben ser reproducibles y redondeados a céntimos; </code>double<code> no lo garantiza. Migrar a </code>BigDecimal<code> con </code>RoundingMode<code> explícito (ver S-15).</p><p>8. <strong>Sin persistencia ni auditoría del cálculo.</strong> Una liquidación tiene efectos legales; el motor no guarda el resultado, ni los insumos, ni quién la calculó y cuándo. No hay trazabilidad para auditoría ni para un eventual contencioso laboral (ver S-14).</p><p>9. <strong>Cifras provistas por el cliente.</strong> El servicio no obtiene salarios/fechas de una fuente de verdad (la entidad </code>Empleado<code> carece de esos campos, §3.2); confía en el cuerpo de la petición e <strong>ignora </code>empleadoId<code></strong>. Aceptable para una calculadora, inaceptable para emitir liquidaciones oficiales.</p><p>10. <strong>Deducciones sin piso en cero y con topes discutibles.</strong> El neto puede resultar <strong>negativo</strong> (falta </code>Math.max(0, …)<code>); los topes aplicados (50 % para otras deudas, pensión alimentaria sin límite) requieren validación jurídica frente al Art. 154 LOTTT y a la protección especial de las prestaciones sociales.</p><p><h4>H.3 Matriz de cobertura normativa (síntesis)</h4></p><p><tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+|---|---|
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr>
+<tr><td>m => m.replace(/\|/g, '</td><td>')</td></tr></p><p>> <strong>Recomendación transversal.</strong> Antes de usar este motor para liquidaciones reales, someterlo a <strong>validación jurídica</strong> por un especialista laboral, respaldarlo con una <strong>batería de pruebas</strong> basada en casos oficiales (por su criticidad legal), migrar a </code>BigDecimal`, tipificar las causales, cubrir el rango 3-12 meses y añadir persistencia/auditoría. Ver §7, recomendación 12.</p><p>---</p><p><em>Fin del informe. Documento generado para conversión a PDF. Todas las afirmaciones técnicas fueron verificadas contra el código fuente salvo las marcadas [NO VERIFICADO].</em>
+
+<script>
+  mermaid.initialize({ startOnLoad: true });
+  mermaid.contentLoaded();
+</script>
+</body>
+</html>

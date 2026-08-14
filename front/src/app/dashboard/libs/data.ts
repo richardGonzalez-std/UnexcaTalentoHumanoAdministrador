@@ -25,8 +25,7 @@ export const modulos: Modulo[] = [
     titulo: "Cálculo de Prestaciones",
     descripcion:
       "Estima prestaciones sociales, antigüedad e intereses conforme a la normativa vigente.",
-    proximamente: true,
-    href: "#",
+    href: "/dashboard/prestaciones",
   },
   {
     icon: "gear",

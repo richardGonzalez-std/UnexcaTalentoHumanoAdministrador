@@ -13,11 +13,11 @@ public class PrestacionController {
     }
 
     @PostMapping("/calcular")
-    public ResponseEntity<Double> calcularPrestaciones(@RequestBody DatosLiquidacionRequest request) {
-        
-        double montoFinal = prestacionService.calcularPrestacionesSociales(request);
-        
-        return ResponseEntity.ok(montoFinal);
+    public ResponseEntity<ResultadoLiquidacion> calcularPrestaciones(@RequestBody DatosLiquidacionRequest request) {
+
+        ResultadoLiquidacion resultado = prestacionService.calcularPrestacionesSociales(request);
+
+        return ResponseEntity.ok(resultado);
     }
 
 }
