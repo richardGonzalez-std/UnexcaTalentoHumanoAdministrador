@@ -1,0 +1,13 @@
+# El build context es la raíz del repo; sólo back/ hace falta para compilar.
+.git
+.claude
+.remember
+.playwright-mcp
+front
+docs
+scripts
+*.png
+back/build
+back/bin
+back/.gradle
+back/boceto-login
