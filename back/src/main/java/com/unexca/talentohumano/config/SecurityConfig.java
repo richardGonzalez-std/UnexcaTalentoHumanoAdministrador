@@ -1,6 +1,7 @@
 package com.unexca.talentohumano.config;
 
 import com.unexca.talentohumano.login.JwtCookieFilter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,7 +20,12 @@ import java.util.List;
  * - Las rutas /api/auth/** (login, logout) y la documentación quedan abiertas.
  * - El resto exige autenticación, que se obtiene del JWT en cookie httpOnly
  *   leído por {@link JwtCookieFilter}.
- * - CSRF deshabilitado: API stateless con cookie SameSite=Lax, sin formularios.
+ * - CSRF deshabilitado. Con el front en otro dominio la cookie pasa a SameSite=None,
+ *   así que esa ya no es la protección: lo que queda es que todos los endpoints que
+ *   mutan estado reciben JSON, y un POST cross-site con Content-Type: application/json
+ *   obliga al navegador a hacer preflight, que CORS rechaza si el origen no está en la
+ *   lista. Si algún día se agrega un endpoint que acepte form-urlencoded, hay que
+ *   habilitar tokens CSRF.
  */
 @Configuration
 public class SecurityConfig {
@@ -38,11 +44,17 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * @param origins orígenes autorizados, de la propiedad {@code app.cors.allowed-origins}
+     *                (separados por coma). Por defecto los de desarrollo del Next.js local.
+     */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource(
+            @Value("${app.cors.allowed-origins}") List<String> origins) {
         CorsConfiguration c = new CorsConfiguration();
-        // Orígenes de desarrollo del frontend Next.js (3000 por defecto; 3001 si 3000 está ocupado).
-        c.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:3001"));
+        // setAllowedOriginPatterns y no setAllowedOrigins: el segundo prohíbe comodines
+        // cuando allowCredentials=true, y Vercel crea un subdominio nuevo por cada preview.
+        c.setAllowedOriginPatterns(origins);
         c.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         c.setAllowedHeaders(List.of("*"));
         c.setAllowCredentials(true);

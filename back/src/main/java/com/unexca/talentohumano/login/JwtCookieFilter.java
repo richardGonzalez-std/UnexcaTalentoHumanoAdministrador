@@ -39,7 +39,7 @@ public class JwtCookieFilter extends OncePerRequestFilter {
         Cookie[] cookies = request.getCookies();
         if (cookies != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             for (Cookie c : cookies) {
-                if ("token".equals(c.getName())) {
+                if (TokenCookieFactory.NOMBRE.equals(c.getName())) {
                     jwtService.validar(c.getValue())
                         // El token es válido en firma/expiración; ahora exigimos que el
                         // empleado exista y esté activo (revocación al desactivar la cuenta).
