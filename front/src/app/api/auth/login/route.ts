@@ -1,4 +1,4 @@
-import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
@@ -19,13 +19,17 @@ export async function POST(request: Request) {
   });
 
   const data = await res.text();
+  const response = new NextResponse(data, {
+    status: res.status,
+    headers: { "Content-Type": res.headers.get("Content-Type") ?? "application/json" },
+  });
 
   if (res.ok) {
     const setCookie = leerSetCookie(res);
     const token = extraer(setCookie, /(?:^|;\s*)token=([^;]*)/);
     if (token) {
       const maxAge = extraer(setCookie, /Max-Age=(\d+)/i);
-      (await cookies()).set("token", token, {
+      response.cookies.set("token", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
@@ -37,10 +41,7 @@ export async function POST(request: Request) {
     }
   }
 
-  return new Response(data, {
-    status: res.status,
-    headers: { "Content-Type": res.headers.get("Content-Type") ?? "application/json" },
-  });
+  return response;
 }
 
 // undici expone getSetCookie() (varias cookies sin colapsar); si no está,
