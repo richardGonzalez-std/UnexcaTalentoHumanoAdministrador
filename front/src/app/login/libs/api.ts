@@ -1,12 +1,12 @@
 import type { LoginRequest, LoginResponse } from "../types/auth";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
-
+// Ruta relativa: pega contra el route handler de Next (mismo origen), que
+// reenvía al backend y emite la cookie del token en el dominio del front. Así
+// la sesión funciona también cuando front y back están en dominios distintos.
 export async function login(req: LoginRequest): Promise<LoginResponse> {
-  const res = await fetch(`${API}/api/auth/login`, {
+  const res = await fetch("/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include", // necesario para que el navegador acepte/envíe la cookie
     body: JSON.stringify(req),
   });
 

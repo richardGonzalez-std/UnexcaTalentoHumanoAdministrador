@@ -6,8 +6,6 @@ import { Sidebar } from "@/app/dashboard/_components/Sidebar";
 import { Icon } from "@/app/dashboard/_components/icons";
 import type { UsuarioActual } from "@/app/dashboard/types/dashboard";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
-
 // Cascarón cliente: maneja el menú lateral en móvil y el cierre de sesión.
 // El contenido (KPIs, módulos, solicitudes) se pasa como `children` y se
 // renderiza en el servidor.
@@ -21,11 +19,11 @@ export function DashboardShell({
   const [navOpen, setNavOpen] = useState(false);
   const router = useRouter();
 
-  // Logout del lado del cliente: el navegador debe procesar el Set-Cookie que
-  // borra la sesión, por eso va con credentials:"include" y no desde el servidor.
+  // Logout contra el route handler de Next (mismo origen), que borra la cookie
+  // del token en el dominio del front y avisa al backend.
   async function cerrarSesion() {
     try {
-      await fetch(`${API}/api/auth/logout`, { method: "POST", credentials: "include" });
+      await fetch("/api/auth/logout", { method: "POST" });
     } finally {
       router.replace("/"); // el login vive en la raíz
       router.refresh();
