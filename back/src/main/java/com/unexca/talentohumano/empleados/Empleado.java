@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "empleados")
@@ -36,6 +37,12 @@ public class Empleado {
     private String passwordHash;
     @Column(nullable = false)
     private Boolean activo = true;
+
+    @Column
+    private String cargo;
+
+    @Column(name = "fecha_ingreso")
+    private LocalDate fechaIngreso;
     
     public Long getId() {
         return id;
@@ -112,5 +119,19 @@ public class Empleado {
     }
     public void setActivo(Boolean activo) {
         this.activo = activo;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
+    }
+
+    public LocalDate getFechaIngreso() {
+        return fechaIngreso;
+    }
+    public void setFechaIngreso(LocalDate fechaIngreso) {
+        this.fechaIngreso = fechaIngreso;
     }
 }

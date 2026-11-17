@@ -16,6 +16,7 @@ const PASOS = 4;
 export default function PrestacionesForm() {
   const [paso, setPaso] = useState(1);
   const [empleado, setEmpleado] = useState<Empleado | null>(null);
+  const [fechaIngreso, setFechaIngreso] = useState("");
   const [fechaEgreso, setFechaEgreso] = useState("");
   const [motivoTerminacion, setMotivoTerminacion] = useState("RENUNCIA");
   const [sueldoTabla, setSueldoTabla] = useState(0);
@@ -50,14 +51,14 @@ export default function PrestacionesForm() {
 
   // Un egreso anterior al ingreso da una antigüedad negativa y arrastra toda la
   // liquidación a negativo, así que no se pide la estimación con esas fechas.
-  const fechasInvertidas = !!empleado && !!fechaEgreso && fechaEgreso < empleado.fechaIngreso;
-  const datosCompletos = !!empleado && !!fechaEgreso && !fechasInvertidas;
+  const fechasInvertidas = !!empleado && !!fechaIngreso && !!fechaEgreso && fechaEgreso < fechaIngreso;
+  const datosCompletos = !!empleado && !!fechaIngreso && !!fechaEgreso && !fechasInvertidas;
 
   const datos: DatosLiquidacionRequest | null = useMemo(() => {
-    if (!empleado || !fechaEgreso || fechaEgreso < empleado.fechaIngreso) return null;
+    if (!empleado || !fechaIngreso || !fechaEgreso || fechaEgreso < fechaIngreso) return null;
     return {
       empleadoId: empleado.id,
-      fechaIngreso: empleado.fechaIngreso,
+      fechaIngreso: fechaIngreso,
       fechaEgreso,
       motivoTerminacion,
       sueldoTabla,
@@ -77,6 +78,7 @@ export default function PrestacionesForm() {
     motivoTerminacion,
     sueldoTabla,
     primas,
+    fechaIngreso,
     esSalarioVariable,
     promedioSueldoUltimos6Meses,
     diasBonoVacacional,
@@ -138,7 +140,7 @@ export default function PrestacionesForm() {
 
   const estado: "vacio" | "error" | "calculando" | "resultado" = !empleado
     ? "vacio"
-    : !fechaEgreso || fechasInvertidas
+    : !fechaIngreso || !fechaEgreso || fechasInvertidas
     ? "error"
     : cargando
     ? "calculando"
@@ -150,10 +152,12 @@ export default function PrestacionesForm() {
 
   // Distingue el error de datos faltantes del error de la petición al backend,
   // para no mostrar "faltan datos" cuando el formulario ya está completo.
-  const errorMensaje = !fechaEgreso
+  const errorMensaje = !fechaIngreso
+    ? "Ingresa la fecha de ingreso para completar la estimación."
+    : !fechaEgreso
     ? "Ingresa la fecha de egreso para completar la estimación."
     : fechasInvertidas
-    ? `La fecha de egreso es anterior al ingreso del empleado (${empleado?.fechaIngreso}).`
+    ? `La fecha de egreso es anterior al ingreso del empleado (${fechaIngreso}).`
     : errorApi ?? "No se pudo completar la estimación.";
 
   // El monto ya lo tiene la estimación en vivo, que se recalcula con cada cambio
@@ -183,14 +187,29 @@ export default function PrestacionesForm() {
                 <div className="mb-1 text-[9.5px] font-bold uppercase tracking-wide text-brand-300">Paso 1 de {PASOS}</div>
                 <h2 className="mb-4 text-[16px] font-bold text-ink">Datos del empleado</h2>
                 <div className="mb-4">
-                  <EmployeeSearch empleado={empleado} onSelect={setEmpleado} />
+                  <EmployeeSearch
+                    empleado={empleado}
+                    onSelect={(e) => {
+                      setEmpleado(e);
+                      setFechaIngreso(e?.fechaIngreso ?? "");
+                    }}
+                  />
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  <Campo label="Fecha Ingreso">
+                    <input
+                      type="date"
+                      value={fechaIngreso}
+                      max={fechaEgreso || undefined}
+                      onChange={(e) => setFechaIngreso(e.target.value)}
+                      className={campoClase(!fechaIngreso && !!empleado)}
+                    />
+                  </Campo>
                   <Campo label="Fecha Egreso">
                     <input
                       type="date"
                       value={fechaEgreso}
-                      min={empleado?.fechaIngreso}
+                      min={fechaIngreso || undefined}
                       onChange={(e) => setFechaEgreso(e.target.value)}
                       className={campoClase((!fechaEgreso && !!empleado) || fechasInvertidas)}
                     />
@@ -205,10 +224,12 @@ export default function PrestacionesForm() {
                     </select>
                   </Campo>
                 </div>
-                {empleado && (!fechaEgreso || fechasInvertidas) && (
+                {empleado && (!fechaIngreso || !fechaEgreso || fechasInvertidas) && (
                   <div className="mt-4 flex items-center gap-2.5 rounded-[11px] border border-[#f5c6c2] bg-[#fdecea] px-[13px] py-[10px] text-[12px] font-medium text-[#b3261e]">
                     {fechasInvertidas
-                      ? `La fecha de egreso no puede ser anterior al ingreso (${empleado.fechaIngreso}).`
+                      ? `La fecha de egreso no puede ser anterior al ingreso (${fechaIngreso}).`
+                      : !fechaIngreso
+                      ? "Ingresa la fecha de ingreso para continuar."
                       : "Ingresa la fecha de egreso para continuar."}
                   </div>
                 )}

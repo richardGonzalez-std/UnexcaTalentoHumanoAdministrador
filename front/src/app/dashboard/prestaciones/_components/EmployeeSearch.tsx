@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { buscarEmpleados, type Empleado } from "../libs/empleados";
 
 export function EmployeeSearch({
@@ -12,9 +12,29 @@ export function EmployeeSearch({
 }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
-  const resultados = buscarEmpleados(query);
+  const [resultados, setResultados] = useState<Empleado[]>([]);
+
+  useEffect(() => {
+    if (!query.trim()) {
+      setResultados([]);
+      return;
+    }
+    let cancelled = false;
+    buscarEmpleados(query).then((r) => {
+      if (!cancelled) setResultados(r);
+    });
+    return () => { cancelled = true; };
+  }, [query]);
 
   if (empleado) {
+    const fecha = empleado.fechaIngreso
+      ? new Date(empleado.fechaIngreso + "T00:00:00").toLocaleDateString("es-VE", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        })
+      : null;
+
     return (
       <div className="flex items-center gap-3 rounded-[11px] border border-line bg-white p-3">
         <div
@@ -26,11 +46,16 @@ export function EmployeeSearch({
         <div className="min-w-0 flex-1">
           <div className="truncate text-[13px] font-bold text-ink">{empleado.nombre}</div>
           <div className="truncate text-[11.5px] text-ink-soft">
-            {empleado.cedula} · {empleado.cargo} · Ingresó el{" "}
-            {new Date(empleado.fechaIngreso).toLocaleDateString("es-VE", { day: "numeric", month: "short", year: "numeric" })}
+            {empleado.cedula}
+            {empleado.cargo ? ` · ${empleado.cargo}` : ""}
+            {fecha ? ` · Ingresó el ${fecha}` : ""}
           </div>
         </div>
-        <button type="button" onClick={() => onSelect(null)} className="text-[12px] font-semibold text-brand-600 hover:text-brand">
+        <button
+          type="button"
+          onClick={() => onSelect(null)}
+          className="text-[12px] font-semibold text-brand-600 hover:text-brand"
+        >
           Cambiar
         </button>
       </div>

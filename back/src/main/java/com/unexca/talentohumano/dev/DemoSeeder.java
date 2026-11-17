@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import java.time.LocalDate;
 
 @Component
 @ConditionalOnProperty(name = "app.seed-demo", havingValue = "true")
@@ -33,6 +34,8 @@ public class DemoSeeder implements CommandLineRunner {
         e.setDireccion("Caracas");
         e.setPasswordHash(encoder.encode("Unexca2026"));
         e.setActivo(true);
+        e.setCargo("Docente");
+        e.setFechaIngreso(LocalDate.of(2018, 3, 12));
         repo.save(e);
         System.out.println(">>> Empleado de prueba creado: V-12345678 / Unexca2026");
     }
