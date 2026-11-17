@@ -1,0 +1,23 @@
+name: Keep Backend Alive
+
+on:
+  schedule:
+    # Cada 14 minutos (Render duerme tras 15 min de inactividad)
+    - cron: '*/14 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 30 \
+            https://unexcatalentohumanoadministradorapi.onrender.com/api/health)
+          echo "Status: $STATUS"
+          if [ "$STATUS" = "200" ]; then
+            echo "Backend OK"
+          else
+            echo "Backend warming up (status $STATUS) — normal si acaba de despertar"
+          fi
