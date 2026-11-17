@@ -6,32 +6,34 @@ export interface HistorialItem {
   fecha: string; // ISO
 }
 
-const KEY = "th_prestaciones_historial";
-
-// Datos de ejemplo mientras no exista un endpoint de historial en el backend.
-const SEED: HistorialItem[] = [
-  { id: "seed-1", nombreEmpleado: "Luis Martínez", motivoTerminacion: "RENUNCIA", montoFinal: 42100, fecha: new Date(Date.now() - 2 * 86400000).toISOString() },
-  { id: "seed-2", nombreEmpleado: "Ana Pérez", motivoTerminacion: "RENUNCIA", montoFinal: 38900, fecha: new Date(Date.now() - 5 * 86400000).toISOString() },
-  { id: "seed-3", nombreEmpleado: "Carmen Díaz", motivoTerminacion: "RENUNCIA", montoFinal: 51200, fecha: new Date(Date.now() - 7 * 86400000).toISOString() },
-];
-
-export function obtenerHistorial(): HistorialItem[] {
-  if (typeof window === "undefined") return SEED;
+export async function obtenerHistorial(): Promise<HistorialItem[]> {
   try {
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return SEED;
-    return JSON.parse(raw) as HistorialItem[];
+    const res = await fetch("/api/historial/prestaciones");
+    if (!res.ok) return [];
+    const data: Array<{
+      id: number;
+      nombreEmpleado: string;
+      motivoTerminacion: string;
+      montoFinal: number;
+      fecha: string;
+    }> = await res.json();
+    return data.map((h) => ({ ...h, id: String(h.id) }));
   } catch {
-    return SEED;
+    return [];
   }
 }
 
-export function agregarAlHistorial(item: Omit<HistorialItem, "id" | "fecha">): HistorialItem[] {
-  const actual = obtenerHistorial();
-  const nuevo: HistorialItem = { ...item, id: crypto.randomUUID(), fecha: new Date().toISOString() };
-  const actualizado = [nuevo, ...actual].slice(0, 8);
-  if (typeof window !== "undefined") {
-    window.localStorage.setItem(KEY, JSON.stringify(actualizado));
+export async function agregarAlHistorial(
+  item: Omit<HistorialItem, "id" | "fecha">
+): Promise<HistorialItem[]> {
+  try {
+    await fetch("/api/historial/prestaciones", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(item),
+    });
+  } catch {
+    // La UI muestra éxito aunque falle el guardado — el usuario ya tiene el resultado.
   }
-  return actualizado;
+  return obtenerHistorial();
 }

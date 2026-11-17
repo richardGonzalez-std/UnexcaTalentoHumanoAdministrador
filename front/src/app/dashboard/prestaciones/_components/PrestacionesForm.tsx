@@ -39,7 +39,7 @@ export default function PrestacionesForm() {
   const [compareResultado, setCompareResultado] = useState<number | null>(null);
 
   const [historial, setHistorial] = useState<HistorialItem[]>([]);
-  useEffect(() => setHistorial(obtenerHistorial()), []);
+  useEffect(() => { obtenerHistorial().then(setHistorial); }, []);
 
   // Confirmación efímera del guardado, para que el botón acuse recibo.
   const [guardado, setGuardado] = useState(false);
@@ -163,11 +163,10 @@ export default function PrestacionesForm() {
   // El monto ya lo tiene la estimación en vivo, que se recalcula con cada cambio
   // y bloquea el botón mientras está en vuelo. Volver a pedirlo aquí repetiría la
   // misma petición para obtener el mismo número: este botón solo registra.
-  function handleGuardar() {
+  async function handleGuardar() {
     if (resultado === null || !empleado) return;
-    setHistorial(
-      agregarAlHistorial({ nombreEmpleado: empleado.nombre, motivoTerminacion, montoFinal: resultado })
-    );
+    const updated = await agregarAlHistorial({ nombreEmpleado: empleado.nombre, motivoTerminacion, montoFinal: resultado });
+    setHistorial(updated);
     setGuardado(true);
   }
 
