@@ -5,11 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/historial/prestaciones")
 public class HistorialController {
+
+    private static final DateTimeFormatter ISO = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     private final HistorialPrestacionRepository repo;
 
@@ -23,7 +26,8 @@ public class HistorialController {
                    .stream()
                    .map(h -> new HistorialPrestacionDto(
                            h.getId(), h.getNombreEmpleado(),
-                           h.getMotivoTerminacion(), h.getMontoFinal(), h.getFecha()))
+                           h.getMotivoTerminacion(), h.getMontoFinal(),
+                           h.getFecha().format(ISO)))
                    .toList();
     }
 
@@ -42,6 +46,7 @@ public class HistorialController {
 
         return new HistorialPrestacionDto(
                 h.getId(), h.getNombreEmpleado(),
-                h.getMotivoTerminacion(), h.getMontoFinal(), h.getFecha());
+                h.getMotivoTerminacion(), h.getMontoFinal(),
+                h.getFecha().format(ISO));
     }
 }
