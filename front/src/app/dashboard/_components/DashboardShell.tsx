@@ -62,7 +62,7 @@ export function DashboardShell({
           <div className="text-[15px] font-bold text-brand">Talento Humano · UNEXCA</div>
         </div>
 
-        <main className="w-full max-w-[1200px] px-[46px] pb-12 pt-[38px] max-[920px]:px-[22px] max-[920px]:pb-10 max-[920px]:pt-[26px] max-[520px]:px-4 max-[520px]:pb-9 max-[520px]:pt-[22px]">
+        <main className="w-full px-[46px] pb-12 pt-[38px] max-[920px]:px-[22px] max-[920px]:pb-10 max-[920px]:pt-[26px] max-[520px]:px-4 max-[520px]:pb-9 max-[520px]:pt-[22px]">
           {children}
         </main>
       </div>

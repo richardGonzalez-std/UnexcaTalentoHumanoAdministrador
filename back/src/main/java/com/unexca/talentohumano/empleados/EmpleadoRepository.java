@@ -10,6 +10,8 @@ import java.util.Optional;
 public interface EmpleadoRepository extends JpaRepository<Empleado, Long> {
     Optional<Empleado> findByCedula(String cedula);
 
+    long countByActivoTrue();
+
     // :q debe llegar ya escapado (% y _ escapados con \) desde el caller.
     @Query("""
         SELECT e FROM Empleado e WHERE e.activo = true AND (

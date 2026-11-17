@@ -18,6 +18,11 @@ public class EmpleadoController {
         this.repo = repo;
     }
 
+    @GetMapping("/count")
+    public java.util.Map<String, Long> count() {
+        return java.util.Map.of("total", repo.countByActivoTrue());
+    }
+
     @GetMapping
     public List<EmpleadoResumenDto> buscar(
             @RequestParam(defaultValue = "") String q) {

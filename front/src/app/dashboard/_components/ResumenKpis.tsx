@@ -1,9 +1,40 @@
+import { cookies } from "next/headers";
 import { Icon } from "@/app/dashboard/_components/icons";
 import { kpis } from "@/app/dashboard/libs/data";
 
-// Sección "Resumen": fila compacta de indicadores, de menor jerarquía visual
-// que las tarjetas de módulo.
-export function ResumenKpis() {
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+
+async function fetchEmpleadosTotal(): Promise<number> {
+  const token = (await cookies()).get("token");
+  if (!token) return 0;
+  try {
+    const res = await fetch(`${API}/api/empleados/count`, {
+      headers: { Cookie: `token=${token.value}` },
+      cache: "no-store",
+    });
+    if (!res.ok) return 0;
+    const data = await res.json();
+    return data.total ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+export async function ResumenKpis() {
+  const totalEmpleados = await fetchEmpleadosTotal();
+
+  const kpisConEmpleados = kpis.map((kpi) =>
+    kpi.icon === "calculator"
+      ? {
+          ...kpi,
+          label:
+            totalEmpleados > 0
+              ? `prestaciones · ${totalEmpleados} empleados disponibles`
+              : "Prestaciones este mes",
+        }
+      : kpi
+  );
+
   return (
     <section className="mb-[34px]">
       <div className="mb-[18px] flex items-center gap-3">
@@ -11,7 +42,7 @@ export function ResumenKpis() {
       </div>
 
       <div className="grid grid-cols-4 gap-[14px] max-[920px]:grid-cols-2 max-[520px]:grid-cols-1">
-        {kpis.map((kpi) => (
+        {kpisConEmpleados.map((kpi) => (
           <div
             key={kpi.label}
             className="flex items-center gap-[13px] rounded-[13px] border border-line bg-white px-4 py-[15px] shadow-card transition-[border-color,box-shadow] hover:border-[#cfdcec] hover:shadow-card-md"

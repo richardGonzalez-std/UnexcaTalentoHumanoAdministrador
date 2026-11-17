@@ -8,7 +8,7 @@ export const kpis: Kpi[] = [
   { icon: "people", value: 248, label: "Profesores activos" },
   { icon: "idcard", value: 63, label: "Personal administrativo" },
   { icon: "envelope", value: 12, label: "Correspondencia pendiente", attention: true },
-  { icon: "calculator", value: 37, label: "Prestaciones este mes" },
+  { icon: "calculator", value: 37, label: "Prestaciones este mes" }, // reemplazado en ResumenKpis
 ];
 
 export const modulos: Modulo[] = [
