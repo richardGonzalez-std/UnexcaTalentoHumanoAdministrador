@@ -22,9 +22,10 @@ public class EmpleadoController {
     public List<EmpleadoResumenDto> buscar(
             @RequestParam(defaultValue = "") String q) {
 
-        if (q.isBlank()) return List.of();
+        String term = q.trim();
+        if (term.length() < 2) return List.of();
 
-        return repo.buscar(q.trim(), PageRequest.of(0, 5))
+        return repo.buscar(escapeLike(term), PageRequest.of(0, 5))
                    .stream()
                    .map(EmpleadoController::toDto)
                    .toList();
@@ -40,6 +41,10 @@ public class EmpleadoController {
                 e.getCargo(),
                 e.getFechaIngreso(),
                 iniciales.isBlank() ? "?" : iniciales);
+    }
+
+    private static String escapeLike(String s) {
+        return s.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_");
     }
 
     private static String join(String a, String b) {
