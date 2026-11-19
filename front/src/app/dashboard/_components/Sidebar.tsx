@@ -5,7 +5,7 @@ type NavItem = { icon: IconName; label: string; href: string; active?: boolean }
 
 const NAV: NavItem[] = [
   { icon: "home", label: "Inicio", href: "/dashboard" },
-  { icon: "people", label: "Empleados", href: "#" },
+  { icon: "people", label: "Empleados", href: "/dashboard/empleados" },
   { icon: "calculator", label: "Cálculo de Prestaciones", href: "/dashboard/prestaciones" },
   { icon: "gear", label: "Administración", href: "#" },
   { icon: "envelope", label: "Correspondencia", href: "#" },

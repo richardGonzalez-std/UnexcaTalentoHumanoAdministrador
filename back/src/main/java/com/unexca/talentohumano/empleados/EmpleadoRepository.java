@@ -21,4 +21,10 @@ public interface EmpleadoRepository extends JpaRepository<Empleado, Long> {
         ) ORDER BY e.apellidoPaterno, e.primerNombre
         """)
     List<Empleado> buscar(@Param("q") String q, Pageable pageable);
+
+    List<Empleado> findAllByOrderByApellidoPaternoAscPrimerNombreAsc();
+
+    List<Empleado> findByTipoPersonalOrderByApellidoPaternoAscPrimerNombreAsc(TipoPersonal tipo);
+
+    List<Empleado> findByActivoFalseOrderByApellidoPaternoAscPrimerNombreAsc();
 }

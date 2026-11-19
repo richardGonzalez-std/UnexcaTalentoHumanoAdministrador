@@ -34,8 +34,9 @@ public class DemoSeeder implements CommandLineRunner {
         e.setDireccion("Caracas");
         e.setPasswordHash(encoder.encode("Unexca2026"));
         e.setActivo(true);
-        e.setCargo("Docente");
+        e.setCargo("Matemáticas");
         e.setFechaIngreso(LocalDate.of(2018, 3, 12));
+        e.setTipoPersonal(com.unexca.talentohumano.empleados.TipoPersonal.DOCENTE);
         repo.save(e);
         System.out.println(">>> Empleado de prueba creado: V-12345678 / Unexca2026");
     }

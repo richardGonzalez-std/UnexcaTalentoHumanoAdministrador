@@ -2,6 +2,8 @@ package com.unexca.talentohumano.empleados;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -43,6 +45,10 @@ public class Empleado {
 
     @Column(name = "fecha_ingreso")
     private LocalDate fechaIngreso;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_personal")
+    private TipoPersonal tipoPersonal;
     
     public Long getId() {
         return id;
@@ -133,5 +139,12 @@ public class Empleado {
     }
     public void setFechaIngreso(LocalDate fechaIngreso) {
         this.fechaIngreso = fechaIngreso;
+    }
+
+    public TipoPersonal getTipoPersonal() {
+        return tipoPersonal;
+    }
+    public void setTipoPersonal(TipoPersonal tipoPersonal) {
+        this.tipoPersonal = tipoPersonal;
     }
 }
