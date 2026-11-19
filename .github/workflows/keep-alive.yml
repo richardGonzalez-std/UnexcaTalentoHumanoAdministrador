@@ -12,12 +12,33 @@ jobs:
     steps:
       - name: Ping backend
         run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            --max-time 30 \
+          echo "=== ping $(date -u +'%Y-%m-%d %H:%M:%SZ') ==="
+          BODY=$(mktemp)
+
+          START=$(date +%s)
+          set +e
+          STATUS=$(curl -s -o "$BODY" -w "%{http_code}" \
+            --max-time 60 \
+            --connect-timeout 15 \
+            -H "Accept: application/json" \
             https://unexcatalentohumanoadministradorapi.onrender.com/api/health)
-          echo "Status: $STATUS"
-          if [ "$STATUS" = "200" ]; then
-            echo "Backend OK"
+          CURL_EXIT=$?
+          set -e
+          ELAPSED=$(( $(date +%s) - START ))
+
+          echo "curl_exit=$CURL_EXIT  http=$STATUS  tiempo=${ELAPSED}s"
+
+          if [ "$CURL_EXIT" = "28" ]; then
+            echo "TIMEOUT: sin respuesta en 60s — Render cold start demasiado lento, revisar plan"
+          elif [ "$CURL_EXIT" != "0" ]; then
+            echo "ERROR red (curl $CURL_EXIT) — respuesta:"
+            cat "$BODY"
+          elif [ "$STATUS" = "200" ]; then
+            echo "OK — backend respondió en ${ELAPSED}s"
           else
-            echo "Backend warming up (status $STATUS) — normal si acaba de despertar"
+            echo "HTTP $STATUS en ${ELAPSED}s — respuesta:"
+            cat "$BODY"
           fi
+
+          rm -f "$BODY"
+          exit 0
