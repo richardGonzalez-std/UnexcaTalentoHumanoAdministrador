@@ -14,31 +14,45 @@ jobs:
         run: |
           echo "=== ping $(date -u +'%Y-%m-%d %H:%M:%SZ') ==="
           BODY=$(mktemp)
+          GLOBAL_START=$(date +%s)
+          MAX_INTENTOS=4
+          PAUSA=15
 
-          START=$(date +%s)
-          set +e
-          STATUS=$(curl -s -o "$BODY" -w "%{http_code}" \
-            --max-time 60 \
-            --connect-timeout 15 \
-            -H "Accept: application/json" \
-            https://unexcatalentohumanoadministradorapi.onrender.com/api/health)
-          CURL_EXIT=$?
-          set -e
-          ELAPSED=$(( $(date +%s) - START ))
+          for INTENTO in $(seq 1 $MAX_INTENTOS); do
+            echo "--- intento $INTENTO/$MAX_INTENTOS a $(date -u +'%H:%M:%SZ') ---"
+            START=$(date +%s)
+            set +e
+            STATUS=$(curl -s -o "$BODY" -w "%{http_code}" \
+              --max-time 45 \
+              --connect-timeout 15 \
+              -H "Accept: application/json" \
+              https://unexcatalentohumanoadministradorapi.onrender.com/api/health)
+            CURL_EXIT=$?
+            set -e
+            ELAPSED=$(( $(date +%s) - START ))
 
-          echo "curl_exit=$CURL_EXIT  http=$STATUS  tiempo=${ELAPSED}s"
+            echo "curl_exit=$CURL_EXIT  http=$STATUS  tiempo=${ELAPSED}s"
 
-          if [ "$CURL_EXIT" = "28" ]; then
-            echo "TIMEOUT: sin respuesta en 60s — Render cold start demasiado lento, revisar plan"
-          elif [ "$CURL_EXIT" != "0" ]; then
-            echo "ERROR red (curl $CURL_EXIT) — respuesta:"
-            cat "$BODY"
-          elif [ "$STATUS" = "200" ]; then
-            echo "OK — backend respondió en ${ELAPSED}s"
-          else
-            echo "HTTP $STATUS en ${ELAPSED}s — respuesta:"
-            cat "$BODY"
-          fi
+            if [ "$CURL_EXIT" = "0" ] && [ "$STATUS" = "200" ]; then
+              TOTAL=$(( $(date +%s) - GLOBAL_START ))
+              echo "OK — backend vivo tras ${TOTAL}s totales"
+              rm -f "$BODY"
+              exit 0
+            elif [ "$CURL_EXIT" = "28" ]; then
+              echo "timeout — backend despertando (Render cold start)"
+            elif [ "$CURL_EXIT" != "0" ]; then
+              echo "ERROR red (curl $CURL_EXIT)"
+            else
+              echo "HTTP $STATUS — respuesta: $(cat $BODY)"
+            fi
 
+            if [ "$INTENTO" -lt "$MAX_INTENTOS" ]; then
+              echo "esperando ${PAUSA}s antes del próximo intento..."
+              sleep $PAUSA
+            fi
+          done
+
+          TOTAL=$(( $(date +%s) - GLOBAL_START ))
+          echo "WARN: backend no respondió 200 después de ${TOTAL}s (${MAX_INTENTOS} intentos)"
           rm -f "$BODY"
           exit 0
