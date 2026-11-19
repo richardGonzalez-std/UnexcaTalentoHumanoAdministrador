@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 import java.util.List;
 
 /**
@@ -21,6 +23,10 @@ import java.util.List;
  * existiendo y esté ACTIVO. Esto da revocación efectiva: si una cuenta se
  * desactiva, sus tokens emitidos dejan de funcionar en la siguiente petición
  * (sin esperar a que el JWT expire).
+ *
+ * Todo usuario autenticado recibe ROLE_ADMIN: solo los que tienen passwordHash
+ * real pueden hacer login (BCrypt nunca produce ""), así que todos los
+ * autenticados son operadores HR con acceso total.
  */
 @Component
 public class JwtCookieFilter extends OncePerRequestFilter {
@@ -47,7 +53,8 @@ public class JwtCookieFilter extends OncePerRequestFilter {
                         .filter(emp -> Boolean.TRUE.equals(emp.getActivo()))
                         .ifPresent(emp -> {
                             var auth = new UsernamePasswordAuthenticationToken(
-                                    emp.getCedula(), null, List.of());
+                                    emp.getCedula(), null,
+                                    List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
                             SecurityContextHolder.getContext().setAuthentication(auth);
                         });
                     break;

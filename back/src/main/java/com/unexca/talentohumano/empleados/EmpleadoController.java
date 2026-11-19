@@ -72,6 +72,7 @@ public class EmpleadoController {
     @ResponseStatus(HttpStatus.CREATED)
     public EmpleadoDetalleDto crear(@Valid @RequestBody GuardarEmpleadoRequest req) {
         Empleado e = new Empleado();
+        e.setCedula(req.cedula()); // solo se establece al crear; inmutable después
         aplicar(req, e);
         e.setPasswordHash(""); // empleado de datos, no usuario del sistema
         repo.save(e);
@@ -85,6 +86,8 @@ public class EmpleadoController {
 
         Empleado e = repo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        // Cédula inmutable: es el claim del JWT; cambiarla rompe la autenticación
+        // del empleado si tiene passwordHash real.
         aplicar(req, e);
         repo.save(e);
         return toDetalleDto(e);
@@ -106,7 +109,7 @@ public class EmpleadoController {
         e.setSegundoNombre(req.segundoNombre());
         e.setApellidoPaterno(req.apellidoPaterno());
         e.setApellidoMaterno(req.apellidoMaterno());
-        e.setCedula(req.cedula());
+        // cedula NO se toca aquí: se establece solo en crear() y es inmutable después
         e.setCorreo(req.correo());
         e.setTelefono(req.telefono());
         e.setDireccion(req.direccion());
